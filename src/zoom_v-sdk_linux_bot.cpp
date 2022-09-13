@@ -21,6 +21,8 @@ using Json = nlohmann::json;
 USING_ZOOM_VIDEO_SDK_NAMESPACE
 IZoomVideoSDK *video_sdk_obj;
 GMainLoop *loop;
+int video_index = -1;
+bool is_to_record = false;
 
 std::string getSelfDirPath()
 {
@@ -33,7 +35,6 @@ std::string getSelfDirPath()
     char *tmp = strrchr(dest, '/');
     if (tmp)
         *tmp = 0;
-    printf("getpath\n");
     return std::string(dest);
 }
 
@@ -43,7 +44,11 @@ public:
     /// \brief Triggered when user enter the session.
     virtual void onSessionJoin()
     {
-        printf("Joined session successfully\n");
+        printf("Joined session successfully.\n");
+        if (video_index >= 0)
+            printf("Camera is on.\n");
+        if (is_to_record)
+            printf("Recoding is on.\n");
     };
 
     /// \brief Triggered when session leaveSession
@@ -75,27 +80,8 @@ public:
                 IZoomVideoSDKUser *user = userList->GetItem(index);
                 if (user)
                 {
-                    // class ZoomVideoSDKRawDataPipeDelegate : public IZoomVideoSDKRawDataPipeDelegate
-                    // {
-                    // public:
-                    //     /// \brief Call when subscribed data received.
-                    //     /// \param data_, data object.
-                    //     virtual void onRawDataFrameReceived(YUVRawDataI420 *data_)
-                    //     {
-                    //         // printf("onRawDataFrameReceived %d*%d\n", data_->GetStreamWidth(), data_->GetStreamHeight());
-                    //         printf(".");
-                    //         std::cout.flush();
-                    //     }
-
-                    //     /// \brief Call when subscribed data status changed.
-                    //     /// \param status, current data status.
-                    //     virtual void onRawDataStatusChanged(RawDataStatus status)
-                    //     {
-                    //     }
-                    // };
-                    // static ZoomVideoSDKRawDataPipeDelegate s_video_data_cb_obj;
-                    // user->GetVideoPipe()->subscribe(ZoomVideoSDKResolution_720P, &s_video_data_cb_obj);
-                    RawDataFFMPEGEncoder *encoder = new RawDataFFMPEGEncoder(user);
+                    if (is_to_record)
+                        RawDataFFMPEGEncoder *encoder = new RawDataFFMPEGEncoder(user);
                 }
             }
         }
@@ -263,7 +249,7 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     ZoomVideoSDKInitParams init_params;
     init_params.domain = "https://go.zoom.us";
     init_params.enableLog = true;
-    init_params.logFilePrefix = "zoom_videosdk_demo";
+    init_params.logFilePrefix = "zoom_v-sdk_linux_bot";
     init_params.videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeHeap;
     init_params.shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeHeap;
     init_params.audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeHeap;
@@ -281,12 +267,31 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     session_context.sessionPassword = session_psw.c_str();
     session_context.userName = "Linux Bot";
     session_context.token = session_token.c_str();
-    session_context.videoOption.localVideoOn = true;
+    session_context.videoOption.localVideoOn = (video_index >= 0); // if no video source arg, turn it off.
     session_context.audioOption.connect = true;
     session_context.audioOption.mute = true;
     IZoomVideoSDKSession *session = NULL;
     if (video_sdk_obj)
+    {
+        auto video_helper = video_sdk_obj->getVideoHelper();
+        auto cam_list = video_helper->getCameraList();
+        int cam_count = cam_list->GetCount();
+        for (int i = 0; i < cam_count; i++)
+        {
+            IZoomVideoSDKCameraDevice *cam = cam_list->GetItem(i);
+            const zchar_t *cam_id = cam->getDeviceId();
+            const zchar_t *cam_name = cam->getDeviceName();
+            printf("cam, id: %s, name: %s\n", cam_id, cam_name);
+        }
+        if (video_index >= 0 && video_index < cam_count)
+        {
+            const zchar_t *cam_id = cam_list->GetItem(video_index)->getDeviceId();
+            const zchar_t *cam_name = cam_list->GetItem(video_index)->getDeviceName();
+            video_helper->selectCamera(cam_id);
+            printf("Camera selected: %s\n", cam_name);
+        }
         session = video_sdk_obj->joinSession(session_context);
+    }
 }
 
 gboolean timeout_callback(gpointer data)
@@ -303,6 +308,27 @@ void my_handler(int s)
 
 int main(int argc, char *argv[])
 {
+    if (argc > 1)
+    {
+        char *arg = argv[1];
+        int i = *arg - '0';
+        if (i >= 0 && i <= 9)
+        {
+            video_index = i;
+        }
+        else
+        {
+            // if (strcmp(arg, "--record") == 0 || strcmp(arg, "-r") == 0)
+            // {
+            // is_to_record = true;
+            // }
+        }
+    }
+    else
+        is_to_record = true;
+
+    printf("video_index is set: %d\n", video_index);
+
     std::string self_dir = getSelfDirPath();
     printf("self path: %s\n", self_dir.c_str());
     self_dir.append("/config.json");
@@ -321,7 +347,7 @@ int main(int argc, char *argv[])
         try
         {
             config_json = Json::parse(buffer);
-            printf("config all_content: %s\n", buffer.c_str());
+            printf("Config loaded: %s\n", buffer.c_str());
         }
         catch (Json::parse_error &ex)
         {
@@ -339,17 +365,17 @@ int main(int argc, char *argv[])
         if (!json_name.is_null())
         {
             session_name = json_name.get<std::string>();
-            printf("config session_name: %s\n", session_name.c_str());
+            // printf("config session_name: %s\n", session_name.c_str());
         }
         if (!json_psw.is_null())
         {
             session_psw = json_psw.get<std::string>();
-            printf("config session_psw: %s\n", session_psw.c_str());
+            // printf("config session_psw: %s\n", session_psw.c_str());
         }
         if (!json_token.is_null())
         {
             session_token = json_token.get<std::string>();
-            printf("config session_token: %s\n", session_token.c_str());
+            // printf("config session_token: %s\n", session_token.c_str());
         }
     } while (false);
 
@@ -358,7 +384,8 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    printf("begin to join: %s\n", self_dir.c_str());
+    // printf("Begin to join: %s\n", self_dir.c_str());
+    printf("Begin to join session...\n");
     joinVideoSDKSession(session_name, session_psw, session_token);
 
     struct sigaction sigIntHandler;
