@@ -4,7 +4,7 @@ project(VideoSDKSessionRecorder CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 add_definitions(-std=c++11)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
@@ -30,21 +30,21 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='/usr/local/lib
 # set(CMAKE_SKIP_BUILD_RPATH true)
 # set(CMAKE_INSTALL_RPATH $ORIGIN)
 # set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
-add_executable(video_sdk_session_recorder ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp ${CMAKE_SOURCE_DIR}/src/video_sdk_session_recorder.cpp )
+add_executable(zoom_v-sdk_linux_bot ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp ${CMAKE_SOURCE_DIR}/src/zoom_v-sdk_linux_bot.cpp )
 
-target_link_libraries(video_sdk_session_recorder videosdk)
-target_link_libraries(video_sdk_session_recorder glib-2.0)
-target_link_libraries(video_sdk_session_recorder z avformat)
-target_link_libraries(video_sdk_session_recorder z lzma swresample avcodec)
-target_link_libraries(video_sdk_session_recorder avutil)
-target_link_libraries(video_sdk_session_recorder swscale avfilter)
+target_link_libraries(zoom_v-sdk_linux_bot videosdk)
+target_link_libraries(zoom_v-sdk_linux_bot glib-2.0)
+target_link_libraries(zoom_v-sdk_linux_bot z avformat)
+target_link_libraries(zoom_v-sdk_linux_bot z lzma swresample avcodec)
+target_link_libraries(zoom_v-sdk_linux_bot avutil)
+target_link_libraries(zoom_v-sdk_linux_bot swscale avfilter)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)
 file(COPY ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/lib/ffmpeg.tar.gz")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib/ffmpeg.tar.gz -C lib/ffmpeg COMMAND rm lib/ffmpeg.tar.gz WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib/ffmpeg.tar.gz -C ${CMAKE_SOURCE_DIR}/lib/ffmpeg/ COMMAND rm lib/ffmpeg.tar.gz WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/lib/qt_libs.tar.gz")
