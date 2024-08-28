@@ -13,6 +13,8 @@ cd zoom_v-sdk_linux_bot/
 cmake -B build
 cd build/
 make
+cd ../bin/
+./zoom_v-sdk_linux_bot
 ```
 
 ## Generate You JWT
