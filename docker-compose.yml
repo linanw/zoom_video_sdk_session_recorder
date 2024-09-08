@@ -1,0 +1,20 @@
+version: "3.0"
+services:
+  recording_gallary:
+    build: ./docker/recording_gallary
+    image: linanw/recording_gallary:3
+    ports:
+      - 80:80
+    volumes:
+      - fs-recording:/server/recording
+  recording_bot:
+    build: .
+    image: linanw/recording_bot:3
+    ports:
+      - 81:81
+    volumes:
+      - fs-recording:/zoom_v-sdk_linux_bot/recording
+    environment:
+      - VSDK_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBfa2V5IjoiQ3MyNDJwMWFDV1lxdTlCYkVlRTRwUWZESmhCZGwyM2UzaFhzIiwidmVyc2lvbiI6MSwiaWF0IjoxNjY0MTk3NzAxLCJ1c2VyX2lkZW50aXR5IjoiMTIzIiwiZXhwIjoxNjY0MzcwNTAxLCJ0cGMiOiJUZXN0Iiwic2Vzc2lvbl9rZXkiOiIiLCJyb2xlX3R5cGUiOjF9.fcfJgfuGnpNWEoE_OFeVZ4uxexIUDHavuhZpUzlfRc8
+volumes:
+  fs-recording:

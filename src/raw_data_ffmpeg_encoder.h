@@ -16,21 +16,15 @@ extern "C"
 #include "libavformat/avio.h"
 #include "libavcodec/avcodec.h"
 }
-// timestamp
-// #define _CRT_SECURE_NO_WARNINGS 1
-// #include <time.h>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <sys/types.h>
-// #include <sys/timeb.h>
-// #include <string.h>
+
 #include <chrono>
 
 // Zoom Video SDK
 #include "helpers/zoom_video_sdk_user_helper_interface.h"
-
 // Other
 #include <vector>
+
+#include "file_video_source.h"
 
 using namespace ZOOMVIDEOSDK;
 using namespace std::chrono;
@@ -61,8 +55,8 @@ class RawDataFFMPEGEncoder :
 	unsigned char* frame_buffer_out;
 	int in_width = 0;
 	int in_height = 0;
-	int out_width = 640;
-	int out_height = 480;
+	int out_width = 320;
+	int out_height = 180;
 
 	AVFilterContext* buffersink_ctx;
 	AVFilterContext* buffersrc_ctx;
@@ -76,7 +70,7 @@ class RawDataFFMPEGEncoder :
 
 	//Output YUV
 	FILE* fp_yuv;
-	int isOutputYUV = 0;
+	int isOutputYUV = 1;
 
 	// ffmpeg encoding
 	AVFormatContext* pFormatCtx;
@@ -96,10 +90,13 @@ class RawDataFFMPEGEncoder :
 	steady_clock::time_point start_time;
 
 	//Output video file name.
-	char fn_out[120];
+	char fn_out[200];
+
+	// Raw Video Output Video 
+	FileVideoSource* rawVideoOutput_ = nullptr;
 
 public: 
-	RawDataFFMPEGEncoder(IZoomVideoSDKUser* user);
+	RawDataFFMPEGEncoder(IZoomVideoSDKUser* user, FileVideoSource* rawVideoOutput);
 	~RawDataFFMPEGEncoder();
 	static void stop_encoding_for(IZoomVideoSDKUser* user);
 	static void log(const wchar_t* format, ...);

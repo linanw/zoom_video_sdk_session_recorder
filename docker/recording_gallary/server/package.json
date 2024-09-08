@@ -1,0 +1,14 @@
+{
+  "name": "recording_gallary",
+  "version": "1.0.0",
+  "description": "",
+  "main": "api.js",
+  "scripts": {
+    "test": "node api/api.js"
+  },
+  "author": "linanw",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}

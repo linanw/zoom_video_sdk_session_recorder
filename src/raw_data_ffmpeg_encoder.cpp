@@ -1,5 +1,7 @@
 
-// #include "stdafx.h"
+// #include <opencv2/imgproc.hpp>
+// #include <opencv2/imgcodecs.hpp>
+
 #include "raw_data_ffmpeg_encoder.h"
 
 using namespace ZOOMVIDEOSDK;
@@ -8,12 +10,14 @@ const AVPixelFormat pix_fmts[] = {AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE};
 std::vector<RawDataFFMPEGEncoder *> RawDataFFMPEGEncoder::list_;
 int RawDataFFMPEGEncoder::instance_count = 0;
 
-RawDataFFMPEGEncoder::RawDataFFMPEGEncoder(IZoomVideoSDKUser *user)
+RawDataFFMPEGEncoder::RawDataFFMPEGEncoder(IZoomVideoSDKUser *user, FileVideoSource* rawVideoOutput)
 {
 	instance_id_ = instance_count++;
 	user_ = user;
-	user_->GetVideoPipe()->subscribe(ZoomVideoSDKResolution_360P, this);
+	user_->GetVideoPipe()->subscribe(ZoomVideoSDKResolution_720P, this);
 	list_.push_back(this);
+
+	rawVideoOutput_ = rawVideoOutput;
 }
 
 RawDataFFMPEGEncoder::~RawDataFFMPEGEncoder()
@@ -56,18 +60,19 @@ int j = 0;
 
 void RawDataFFMPEGEncoder::onRawDataFrameReceived(YUVRawDataI420 *data)
 {
-	// ffmpeg encoding
-	// char userName[20];
-	// wcstombs(userName, user_->getUserName(), 20);
-	// char userID[20];
-	// wcstombs(userID, user_->getUserID(), 20);
 	const zchar_t *userName = user_->getUserName();
 	const zchar_t *userID = user_->getUserID();
+
 	const int width = data->GetStreamWidth();
 	const int height = data->GetStreamHeight();
 	const int bufLen = data->GetBufferLen();
 	const int rotation = data->GetRotation();
 	const int sourceID = data->GetSourceID();
+
+	// output a copy
+	if(rawVideoOutput_){
+		rawVideoOutput_->SendRawVideo(data->GetBuffer(), width, height, bufLen, rotation);
+	}
 
 	if ((sourceID != current_sourceID) && (sourceID == 0 || strlen(userID) > 0) // to skip frames when sourceID comes in but userID is not ready, otherwise create another sepreate file for this moment.
 	)
@@ -109,7 +114,6 @@ void RawDataFFMPEGEncoder::onRawDataFrameReceived(YUVRawDataI420 *data)
 
 void RawDataFFMPEGEncoder::onRawDataStatusChanged(RawDataStatus status)
 {
-	// finish ffmpeg encoding
 	log(L"********** [%d] onRawDataStatusChanged, user: %s, %d.\n", instance_id_, user_->getUserName(), status);
 	if (status == RawData_On)
 	{
@@ -151,8 +155,8 @@ int RawDataFFMPEGEncoder::ffmpeg_start(const char *userName, const char *userID,
 		userID = "0";
 	char fileName[100];
 	sprintf(fileName, "%s_%d_%s_%dx%d_to_%dx%d", userID, sourceID, userName, in_width, in_height, out_width, out_height);
-	char yuvFileName[110];
-	sprintf(yuvFileName, "../%s.yuv", fileName);
+	char yuvFileName[120];
+	sprintf(yuvFileName, "../recording/%80s.yuv", fileName);
 	if (isOutputYUV)
 	{
 		fp_yuv = fopen(yuvFileName, "wb + ");
@@ -165,7 +169,7 @@ int RawDataFFMPEGEncoder::ffmpeg_start(const char *userName, const char *userID,
 
 	char outFileName[110];
 	sprintf(outFileName, "%s.mkv", fileName);
-	sprintf(fn_out, "../%s", outFileName);
+	sprintf(fn_out, "../recording/%s", outFileName);
 
 	// ffmpeg init
 	// init filters
@@ -329,6 +333,8 @@ int RawDataFFMPEGEncoder::ffmpeg_filter_init()
 	return ret;
 }
 
+static bool doOnce = true;
+
 int RawDataFFMPEGEncoder::ffmpeg_filter(uint8_t *Y, uint8_t *U, uint8_t *V)
 {
 	// input Y,U,V
@@ -337,7 +343,7 @@ int RawDataFFMPEGEncoder::ffmpeg_filter(uint8_t *Y, uint8_t *U, uint8_t *V)
 	frame_in->data[2] = V;
 
 	// output Y,U,V
-	if (isOutputYUV && frame_in->format == AV_PIX_FMT_YUV420P)
+	if (isOutputYUV && frame_in->format == AV_PIX_FMT_YUV420P && doOnce)
 	{
 		for (int i = 0; i < frame_in->height; i++)
 		{
@@ -351,6 +357,7 @@ int RawDataFFMPEGEncoder::ffmpeg_filter(uint8_t *Y, uint8_t *U, uint8_t *V)
 		{
 			fwrite(frame_in->data[2] + frame_in->linesize[2] * i, 1, frame_in->width / 2, fp_yuv);
 		}
+		doOnce = false;
 	}
 
 	// apply filter
@@ -373,23 +380,15 @@ int RawDataFFMPEGEncoder::ffmpeg_filter(uint8_t *Y, uint8_t *U, uint8_t *V)
 
 int RawDataFFMPEGEncoder::ffmpeg_encode()
 {
-	int ret;
-
 	// timestamp
-	//  struct _timeb tstruct;
-	//  _ftime(&tstruct);
 	steady_clock::time_point current_time = steady_clock::now();
-
-	// frame_out->pts = ((tstruct.time - start_tstruct.time) * 1000 + (tstruct.millitm - start_tstruct.millitm)) * 10;
-	frame_out->pts = duration_cast<std::chrono::milliseconds>(current_time - start_time).count() * (video_st->time_base.den) / (video_st->time_base.num * 1000);
-	// frame_out->pts = j++ * 1000; //(video_st->time_base.den) / ((video_st->time_base.num) * 60);
+	frame_out->pts = duration_cast<std::chrono::milliseconds>(current_time - start_time).count() 
+		* (video_st->time_base.den) / (video_st->time_base.num * 1000);
 
 	// prepare packet
-	// picture_size = avpicture_get_size(pCodecCtx->pix_fmt, frame_out->width, frame_out->height);
-	// picture_size = av_image_get_buffer_size(pCodecCtx->pix_fmt, frame_out->width, frame_out->height, 0);
-	// av_new_packet(&pkt, picture_size);
 	av_init_packet(&pkt);
 
+	int ret;
 	int got_picture = 0;
 	if ((ret = avcodec_encode_video2(pCodecCtx, &pkt, frame_out, &got_picture)) < 0)
 	{
@@ -399,7 +398,7 @@ int RawDataFFMPEGEncoder::ffmpeg_encode()
 	}
 	if (got_picture == 1)
 	{
-		printf("Succeed to encode frame: %5d\tsize:%5d\n", framecnt, pkt.size);
+		// printf("Succeed to encode frame: %5d\tsize:%5d\n", framecnt, pkt.size);
 		framecnt++;
 		pkt.stream_index = video_st->index;
 		av_write_frame(pFormatCtx, &pkt);

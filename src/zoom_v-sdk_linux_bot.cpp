@@ -7,10 +7,12 @@
 #include <iostream>
 #include <signal.h>
 #include <stdlib.h>
+#include <sstream>
 
 #include "glib.h"
 #include "json.hpp"
 #include "helpers/zoom_video_sdk_user_helper_interface.h"
+#include "helpers/zoom_video_sdk_cmd_channel_interface.h"
 #include "zoom_video_sdk_api.h"
 #include "zoom_video_sdk_def.h"
 #include "zoom_video_sdk_delegate_interface.h"
@@ -23,6 +25,7 @@ IZoomVideoSDK *video_sdk_obj;
 GMainLoop *loop;
 int video_index = -1;
 bool is_to_record = false;
+FileVideoSource *fileVideoSource = new FileVideoSource();
 
 std::string getSelfDirPath()
 {
@@ -46,9 +49,15 @@ public:
     {
         printf("Joined session successfully.\n");
         if (video_index >= 0)
+        {
             printf("Camera is on.\n");
+        }
+        else
+        {
+            video_sdk_obj->getVideoHelper()->startVideo();
+        }
         if (is_to_record)
-            printf("Recoding is on.\n");
+            printf("Ready to recording.\n");
     };
 
     /// \brief Triggered when session leaveSession
@@ -56,7 +65,7 @@ public:
     {
         g_main_loop_unref(loop);
         printf("Already left session.\n");
-        exit(1);
+        exit(0);
     };
 
     /// \brief Triggered when session error.
@@ -80,8 +89,9 @@ public:
                 IZoomVideoSDKUser *user = userList->GetItem(index);
                 if (user)
                 {
+                    printf("An user joined/found: %s(%s).\n", user->getUserName(), user->getUserID());
                     if (is_to_record)
-                        RawDataFFMPEGEncoder *encoder = new RawDataFFMPEGEncoder(user);
+                        RawDataFFMPEGEncoder *encoder = new RawDataFFMPEGEncoder(user, fileVideoSource);
                 }
             }
         }
@@ -92,6 +102,7 @@ public:
     /// \param userList is the pointer to user object list.
     virtual void onUserLeave(IZoomVideoSDKUserHelper *pUserHelper, IVideoSDKVector<IZoomVideoSDKUser *> *userList)
     {
+        printf("An user left.\n");
         if (userList)
         {
             int count = userList->GetCount();
@@ -198,14 +209,25 @@ public:
     ///        Once the command channel is active, this callback is triggered each time a message has been received.
     /// \param pSender The user who sent the command, see \link IZoomVideoSDKUser \endlink.
     /// \param strCmd Received command.
-    virtual void onCommandReceived(IZoomVideoSDKUser *sender, const zchar_t *strCmd){};
+    virtual void onCommandReceived(IZoomVideoSDKUser *sender, const zchar_t *strCmd)
+    {
+        printf("command received\n");
+    };
 
     /// \brief Callback for when the command channel is ready to be used.
     ///        After the SDK attempts to establish a connection for the command channel upon joining a session,
     ///        this callback will be triggered once the connection attempt has completed.
     /// \param isSuccess true: success, command channel is ready to be used.
     ///        false: Failure, command channel was unable to connect.
-    virtual void onCommandChannelConnectResult(bool isSuccess){};
+    virtual void onCommandChannelConnectResult(bool isSuccess)
+    {
+        printf("command channel connect: %d\n", isSuccess);
+        if (isSuccess && video_index >= 0)
+        {
+            IZoomVideoSDKCmdChannel *cmdChannel = video_sdk_obj->getCmdChannel();
+            cmdChannel->sendCommand(NULL, "test");
+        }
+    };
 
     /// \brief Triggered when call Out status changed.
     virtual void onInviteByPhoneStatus(PhoneStatus status, PhoneFailedReason reason){};
@@ -258,18 +280,19 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     ZoomVideoSDKErrors err = video_sdk_obj->initialize(init_params);
     if (err != ZoomVideoSDKErrors_Success)
     {
-        return;
+        printf("Failed to create SDK instance, error code: %d\n", err);
     }
     IZoomVideoSDKDelegate *listener = new ZoomVideoSDKDelegate();
     video_sdk_obj->addListener(dynamic_cast<IZoomVideoSDKDelegate *>(listener));
     ZoomVideoSDKSessionContext session_context;
     session_context.sessionName = session_name.c_str();
     session_context.sessionPassword = session_psw.c_str();
-    session_context.userName = "Linux Bot";
+    session_context.userName = "Rocording Bot";
     session_context.token = session_token.c_str();
     session_context.videoOption.localVideoOn = (video_index >= 0); // if no video source arg, turn it off.
-    session_context.audioOption.connect = true;
+    session_context.audioOption.connect = false;
     session_context.audioOption.mute = true;
+    session_context.externalVideoSource = fileVideoSource;
     IZoomVideoSDKSession *session = NULL;
     if (video_sdk_obj)
     {
@@ -341,6 +364,20 @@ int main(int argc, char *argv[])
     t.read(&buffer[0], size);
 
     std::string session_name, session_psw, session_token;
+
+    std::stringstream ss;
+    if (char *session_token_char = std::getenv("VSDK_TOKEN"))
+    {
+        ss.str(session_token_char);
+        session_token = ss.str();
+        printf("session_token loaded: %s\n", session_token.c_str());
+    }
+    //     std::cout << "[ENV] session_name: " <<  << '\n';
+    // if (session_psw = std::stringstream.str(std::getenv("VSDK_SESSION_PSW")))
+    //     std::cout << "[ENV] session_psw: " << session_psw << '\n';
+    // if (session_token = std::stringstream.str(std::getenv("VSDK_SESSION_TOKEN")))
+    //     std::cout << "[ENV] session_token: " << session_token << '\n';
+
     do
     {
         Json config_json;
@@ -372,12 +409,15 @@ int main(int argc, char *argv[])
             session_psw = json_psw.get<std::string>();
             // printf("config session_psw: %s\n", session_psw.c_str());
         }
-        if (!json_token.is_null())
+        printf("session_token size: %lu.\n", session_token.size());
+        if (!json_token.is_null() && session_token.size() == 0)
         {
             session_token = json_token.get<std::string>();
             // printf("config session_token: %s\n", session_token.c_str());
         }
     } while (false);
+
+    printf("token: %s\n", session_token.c_str());
 
     if (session_name.size() == 0 || session_token.size() == 0)
     {

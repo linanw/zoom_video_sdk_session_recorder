@@ -1,0 +1,65 @@
+<p><button onclick="start()">Start Recording</button></p>
+<p><button onclick="stop()">Stop Recording</button></p>
+<p><a id="link" target="gallary">Rendering Recording Gallary</a></p>
+<p><button onclick="clean()">Clean Recordings</button></p>
+<p id="log"></p>
+<script>
+    var decoder = new TextDecoder();
+
+    function start() {
+        fetch('/start').then(async (response) => {
+            response.json().then(function (data) {
+                console.log(data)
+                checkLog();
+            });
+        }).catch(function () {
+            console.log('Booo');
+        });
+    }
+
+    function stop() {
+        fetch('/stop').then(function (response) {
+            response.json().then(function (data) {
+                console.log(data)
+                checkLog();
+            });
+        }).catch(function () {
+            console.log('Booo');
+        });
+    }
+
+    function clean() {
+        fetch('/clean').then(function (response) {
+            response.json().then(function (data) {
+                console.log(data)
+            });
+        }).catch(function () {
+            console.log('Booo');
+        });
+    }
+
+    function checkLog() {
+        var noCacheHeaders = new Headers();
+        noCacheHeaders.append('pragma', 'no-cache');
+        noCacheHeaders.append('cache-control', 'no-cache');
+        fetch('/log', {method: 'GET', headers: noCacheHeaders}).then(function (response) {
+            response.json().then(function (data) {
+                console.log(data)
+                document.getElementById('log').innerText = data['stdout'];
+            });
+        }).catch(function () {
+            console.log('Booo');
+        });
+    }
+
+    document.getElementById("link").href = window.location.href.replaceAll(':81', '');
+
+    async function keepCheckLog() {
+        while (true) {
+            checkLog();
+            await new Promise(r => setTimeout(r, 5000));
+        }
+    }
+
+    keepCheckLog();
+</script>

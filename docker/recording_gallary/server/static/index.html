@@ -1,0 +1,13 @@
+<script>
+    fetch('/refresh').then(function (response) {
+        response.json().then(function (data) {
+            console.log(data)
+            if (data['success'] == '1') {
+                window.location = "/gallary/index.html";
+            }
+        });
+    }).catch(function () {
+        console.log('Booo');
+    });
+</script>
+<h1>Rendering gallary...<h1>

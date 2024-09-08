@@ -1,0 +1,1 @@
+pkill -2 -f zoom_v-sdk_linux_bot

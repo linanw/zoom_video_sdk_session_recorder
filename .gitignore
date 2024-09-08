@@ -4,4 +4,9 @@ build/
 !.vscode/c_cpp_properties.json
 *.mkv
 lib/ffmpeg
-lib/qt_libs
+lib/zoom_video_sdk/qt_libs
+node_modules
+gallary
+config.json
+*.log
+*.yuv
