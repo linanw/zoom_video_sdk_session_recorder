@@ -17,6 +17,11 @@ class IZoomVideoSDKChatMessage
 public:
 	virtual ~IZoomVideoSDKChatMessage(){}
 
+	/// \brief Get the message ID of the current message.
+    /// \return If the function succeeds, the return value is the message ID of the current message.
+    ///Otherwise failed, the return value is the string of length zero(0)
+	virtual const zchar_t* getMessageID() = 0;
+
 	/// \brief Get the send user object of the message.
     /// \return If the function succeeds, the return value is send user object, Otherwise NULL.
     virtual IZoomVideoSDKUser* getSendUser() = 0;

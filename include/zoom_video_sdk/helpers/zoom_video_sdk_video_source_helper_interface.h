@@ -18,7 +18,7 @@ public:
 	virtual ~IZoomVideoSDKVideoSourcePreProcessor(){}
 
 	/// \brief Callback on device capture video frame.
-	/// \param rawData, see \link YUVProcessDataI420 \endlink.
+	/// \param rawData See \link YUVProcessDataI420 \endlink.
 	virtual void onPreProcessRawData(YUVProcessDataI420* rawData) = 0;
 };
 
@@ -31,12 +31,12 @@ public:
 	virtual ~IZoomVideoSDKVideoSender(){}
 
 	/// \brief Send one frame data.
-	/// \param frameBuffer, frameBuffer YUVI420 buffer.
-	/// \param width, frame width.
-	/// \param height, frame height.
-	/// \param frameLength, buffer length.
-	/// \param rotation, buffer rotation.
-	virtual void sendVideoFrame(char* frameBuffer, int width, int height, int frameLength, int rotation) = 0;
+	/// \param frameBuffer FrameBuffer YUVI420 buffer.
+	/// \param width Frame width.
+	/// \param height Frame height.
+	/// \param frameLength Buffer length.
+	/// \param rotation Buffer rotation.
+	virtual void sendVideoFrame(char* frameBuffer, int width, int height, int frameLength, int rotation, FrameDataFormat format = FrameDataFormat_I420_FULL) = 0;
 };
 
 enum VideoSourceDataMode
@@ -100,14 +100,14 @@ public:
 	virtual ~IZoomVideoSDKVideoSource(){}
 
 	/// \brief Callback for video source  prepare.
-	/// \param sender, see \link IZoomVideoSDKVideoSender \endlink.
-	/// \param support_cap_list,  see \link IVideoSDKVector \endlink, see \link VideoSourceCapability \endlink.
-	/// \param suggest_cap,  see \link VideoSourceCapability \endlink.
+	/// \param sender See \link IZoomVideoSDKVideoSender \endlink.
+	/// \param support_cap_list  See \link IVideoSDKVector \endlink, see \link VideoSourceCapability \endlink.
+	/// \param suggest_cap  See \link VideoSourceCapability \endlink.
 	virtual	void onInitialize(IZoomVideoSDKVideoSender* sender, IVideoSDKVector<VideoSourceCapability >* support_cap_list, VideoSourceCapability& suggest_cap) = 0;
 
 	/// \brief Callback for video size or fps changed.
-	/// \param support_cap_list, see \link IVideoSDKVector \endlink, see \link VideoSourceCapability \endlink.
-	/// \param suggest_cap,  see \link VideoSourceCapability \endlink.
+	/// \param support_cap_list See \link IVideoSDKVector \endlink, see \link VideoSourceCapability \endlink.
+	/// \param suggest_cap  See \link VideoSourceCapability \endlink.
 	virtual void onPropertyChange(IVideoSDKVector<VideoSourceCapability >* support_cap_list, VideoSourceCapability suggest_cap) = 0;
 	
 	/// \brief Callback for video source can start send raw data.

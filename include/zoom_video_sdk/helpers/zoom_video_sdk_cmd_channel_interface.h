@@ -10,19 +10,19 @@
 
 BEGIN_ZOOM_VIDEO_SDK_NAMESPACE
 
-/// \brief The command channel is a service tied to the current session, 
-///        which allows users to send data or commands to other users in the same session.
 class IZoomVideoSDKUser;
+/// \brief The command channel 
+///        allows users to send commands or data (such as plain text or a binary encoded into string) to other users in the same session.
 class IZoomVideoSDKCmdChannel
 {
 public:
     virtual ~IZoomVideoSDKCmdChannel() {}
 
-	/// \brief Send custom commands to other users in the current session.
-    /// \param receiver: the user who will receive the command, if receiver is NULL, send to all. see \link IZoomVideoSDKUser \endlink.
-    /// \param strCmd: the customized command.
-	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
-	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
+	/// \brief Send custom commands or data to other users in the current session. Limit: up to 60 custom commands per second.
+    /// \param receiver The user who receives the command, if receiver is set to NULL, the command is broadcast to all users. see \link IZoomVideoSDKUser \endlink.
+    /// \param strCmd The custom commands or data.
+	/// \return If the command sends successfully, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise the send command request fails. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
     virtual ZoomVideoSDKErrors sendCommand(IZoomVideoSDKUser* receiver, const zchar_t* strCmd) = 0;
 };
 END_ZOOM_VIDEO_SDK_NAMESPACE

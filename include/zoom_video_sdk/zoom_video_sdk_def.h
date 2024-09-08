@@ -30,6 +30,7 @@ typedef enum
 	ZoomVideoSDKErrors_No_Impl,
 	ZoomVideoSDKErrors_Dont_Support_Feature,
 	ZoomVideoSDKErrors_Unknown,
+	ZoomVideoSDKErrors_Remove_Folder_Fail,
 	ZoomVideoSDKErrors_Auth_Error = 1001,
 	ZoomVideoSDKErrors_Auth_Empty_Key_or_Secret,
 	ZoomVideoSDKErrors_Auth_Wrong_Key_or_Secret,
@@ -47,7 +48,7 @@ typedef enum
 	ZoomVideoSDKErrors_JoinSession_Token_RoleType_EmptyOrWrong,
 	ZoomVideoSDKErrors_JoinSession_Token_UserIdentity_TooLong,
 	ZoomVideoSDKErrors_SessionModule_Not_Found = 2001,
-	ZoomVideoSDKErrors_SessionService_Invaild,
+	ZoomVideoSDKErrors_SessionService_Invalid,
 	ZoomVideoSDKErrors_Session_Join_Failed,
 	ZoomVideoSDKErrors_Session_No_Rights,
 	ZoomVideoSDKErrors_Session_Already_In_Progress,
@@ -59,6 +60,8 @@ typedef enum
 	ZoomVideoSDKErrors_Session_Password_Wrong,
 	ZoomVideoSDKErrors_Session_Remote_DB_Error,
 	ZoomVideoSDKErrors_Session_Invalid_Param,
+	ZoomVideoSDKErrors_Session_Client_Incompatible,
+	ZoomVideoSDKErrors_Session_Account_FreeMinutesExceeded,
 	ZoomVideoSDKErrors_Session_Audio_Error = 3000,
 	ZoomVideoSDKErrors_Session_Audio_No_Microphone,
 	ZoomVideoSDKErrors_Session_Audio_No_Speaker,
@@ -98,8 +101,21 @@ typedef enum
 	ZoomVideoSDKErrors_Dont_Support_Multi_Stream_Video_User,
 	ZoomVideoSDKErrors_Fail_Assign_User_Privilege,
 	ZoomVideoSDKErrors_No_Recording_In_Process,
+	ZoomVideoSDKErrors_Set_Virtual_Background_Fail,
+	ZoomVideoSDKErrors_Filetransfer_UnknowError = 7500,
+	ZoomVideoSDKErrors_Filetransfer_FileTypeBlocked,
+	ZoomVideoSDKErrors_Filetransfer_FileSizelimited
 
 }ZoomVideoSDKErrors;
+
+typedef enum 
+{
+	ZoomVideoSDKSessionLeaveReason_Unknown = 0,
+	ZoomVideoSDKSessionLeaveReason_BySelf,
+	ZoomVideoSDKSessionLeaveReason_KickByHost,
+	ZoomVideoSDKSessionLeaveReason_EndByHost,
+	ZoomVideoSDKSessionLeaveReason_NetworkError,
+}ZoomVideoSDKSessionLeaveReason;
 
 typedef enum 
 {
@@ -152,14 +168,14 @@ typedef enum
 */
 enum RecordingStatus
 {
-	/// \brief The recording has started or resumed.
+	/// \brief The recording has successfully started or successfully resumed.
 	Recording_Start,
 	/// \brief The recording has stopped.
 	Recording_Stop,
-	/// \brief Recording is unsuccessful due to not having enough storage space.
+	/// \brief Recording is unsuccessful due to insufficient storage space.
 	///	Please try to:
-	///		Free up space
-	///		Purchase more space
+	///		Free up storage space
+	///		Purchase additional storage space
 	Recording_DiskFull,
 	/// \brief The recording has paused.
 	Recording_Pause,
@@ -177,11 +193,13 @@ typedef	enum
 */
 struct ZoomVideoSDKExtendParams
 {
-	const zchar_t* speakerTestFilePath;  //Only support mp3 format,The size cannot exceed 1M
+	const zchar_t* speakerTestFilePath;  ///<Only support mp3 format,The size cannot exceed 1M
+	int wrapperType;
 
 	ZoomVideoSDKExtendParams()
 	{
 		speakerTestFilePath = NULL;
+		wrapperType = 0;
 	}
 };
 
@@ -201,11 +219,7 @@ struct ZoomVideoSDKInitParams
 		domain = NULL;
 		logFilePrefix = NULL;
 		enableLog = false;
-#if (defined __IOS__) || (defined CMM_MAC)
-		enableIndirectRawdata = true;
-#else
 		enableIndirectRawdata = false;
-#endif
 		audioRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeStack;
 		videoRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeStack;
 		shareRawDataMemoryMode = ZoomVideoSDKRawDataMemoryModeStack;
@@ -228,13 +242,17 @@ struct ZoomVideoSDKVideoOption
 */
 struct ZoomVideoSDKAudioOption 
 {
-    bool connect; /// \brief Connect local audio or not.
-    bool mute;    /// \brief Mute audio or not.
+    bool connect; /// \brief Whether to connect local audio or not.
+    bool mute;    /// \brief Whether to mute audio or not.
+	bool isMyVoiceInMix; /// \brief Determine whether my voice is in the mixed audio raw data or not. If true, yes, if false, no.
+	bool autoAdjustSpeakerVolume; /// \brief Whether to automatically adjust the volume of the speaker or not. If true, this will automatically adjust the volume if it is muted or low. If false it will not.
 
 	ZoomVideoSDKAudioOption()
 	{
 		connect = true;
 		mute = false;
+		isMyVoiceInMix = true;
+		autoAdjustSpeakerVolume = false;
 	}
 };
 
@@ -259,6 +277,7 @@ struct ZoomVideoSDKSessionContext
 	IZoomVideoSDKVirtualAudioMic* virtualAudioMic; ///<Virtual mic object pointer, optional.
 	IZoomVideoSDKVirtualAudioSpeaker* virtualAudioSpeaker; ///<Virtual speaker object pointer, optional.
 	unsigned int sessionIdleTimeoutMins; ///<The amount of time in minutes after which an idle session will end. If the value is 0, the session will stay alive indefinitely.
+    bool autoLoadMutliStream; ///<Whether to automatically load multiple streams when entering a session, default value is true, optional.
 
 	ZoomVideoSDKSessionContext()
 	{
@@ -271,7 +290,82 @@ struct ZoomVideoSDKSessionContext
 		virtualAudioMic = NULL;
 		virtualAudioSpeaker = NULL;
 		sessionIdleTimeoutMins = 40;
+        autoLoadMutliStream = true;
 	}
 };
+
+enum FrameDataFormat
+{
+	FrameDataFormat_I420_LIMITED,
+	FrameDataFormat_I420_FULL,
+};
+
+typedef enum
+{
+	FileTransferState_None = 0, // The file transfer has no state
+	FileTransferState_ReadyToTransfer, // The file transfer is ready to start
+	FileTransferState_Transfering, // The file transfer is in progress
+	FileTransferState_TransferFailed, // The file transfer failed
+	FileTransferState_TransferDone, // The file transfer completed successfully
+}FileTransferStatus;
+
+struct FileTransferProgress
+{
+	uint32_t ratio; // The ratio of the file transfer completed
+	uint32_t completeSize; // The size of the file transferred so far in bytes
+	uint32_t bitPerSecond; // The speed of the file transfer in bits per second
+	FileTransferProgress()
+	{
+		ratio = 0;
+		completeSize = 0;
+		bitPerSecond = 0;
+	}
+};
+
+struct ZoomVideoSDKFileStatus
+{
+	FileTransferStatus transStatus; // The status of the file transfer
+	FileTransferProgress transProgress; // The progress of the file transfer
+	ZoomVideoSDKFileStatus()
+	{
+		transStatus = FileTransferState_None;
+	}
+};
+
+class IZoomVideoSDKFileTransferBaseInfo
+{
+public:
+	virtual ~IZoomVideoSDKFileTransferBaseInfo() {}
+	virtual time_t getTimeStamp() = 0;
+	virtual bool isSendToAll() = 0;
+	virtual uint32_t getFileSize() = 0;
+	virtual const zchar_t* getFileName() = 0;
+	virtual ZoomVideoSDKFileStatus getStatus() = 0;
+
+};
+class IZoomVideoSDKUser;
+class IZoomVideoSDKSendFile : public IZoomVideoSDKFileTransferBaseInfo
+{
+public:
+	virtual ~IZoomVideoSDKSendFile() {}
+	virtual IZoomVideoSDKUser* getReceiver() = 0;
+	virtual ZoomVideoSDKErrors cancelSend() = 0;
+};
+
+class IZoomVideoSDKReceiveFile : public IZoomVideoSDKFileTransferBaseInfo
+{
+public:
+	virtual ~IZoomVideoSDKReceiveFile() {}
+	virtual IZoomVideoSDKUser* getSender() = 0;
+	virtual ZoomVideoSDKErrors cancelReceive() = 0;
+	virtual ZoomVideoSDKErrors startReceive(const zchar_t* path) = 0;
+};
+
+enum ZoomVideoSDKAudioChannel
+{
+	ZoomVideoSDKAudioChannel_Mono,
+	ZoomVideoSDKAudioChannel_Stereo,
+};
+
 END_ZOOM_VIDEO_SDK_NAMESPACE
 #endif

@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
-
 #include "glib.h"
 #include "json.hpp"
 #include "helpers/zoom_video_sdk_user_helper_interface.h"
@@ -344,7 +343,26 @@ public:
     /// \param speakingLanguage: an object of the spoken message language.
     /// \param transcriptLanguageId: an object of the message language you want to translate.
     virtual void onLiveTranscriptionMsgError(ILiveTranscriptionLanguage *spokenLanguage, ILiveTranscriptionLanguage *transcriptLanguage) {}
-
+    virtual void onSessionLeave(ZoomVideoSDKSessionLeaveReason eReason){}
+    virtual void onUserRecordingConsent(IZoomVideoSDKUser* pUser){}
+    virtual void onCalloutJoinSuccess(IZoomVideoSDKUser* pUser, const zchar_t* phoneNumber){}
+    virtual void onCloudRecordingStatus(RecordingStatus status, IZoomVideoSDKRecordingConsentHandler* pHandler){}
+    virtual void onCameraListChanged(){}
+    virtual void onOriginalLanguageMsgReceived(ILiveTranscriptionMessageInfo* messageInfo){}
+    virtual void onLiveTranscriptionMsgInfoReceived(ILiveTranscriptionMessageInfo* messageInfo){}
+    virtual void onChatMsgDeleteNotification(IZoomVideoSDKChatHelper* pChatHelper, const zchar_t* msgID, ZoomVideoSDKChatMessageDeleteType deleteBy){}
+    virtual void onChatPrivilegeChanged(IZoomVideoSDKChatHelper* pChatHelper, ZoomVideoSDKChatPrivilegeType privilege){}
+    virtual void onSendFileStatus(IZoomVideoSDKSendFile* file, const FileTransferStatus& status){}
+    virtual void onReceiveFileStatus(IZoomVideoSDKReceiveFile* file, const FileTransferStatus& status){}
+    virtual void onProxyDetectComplete(){}
+    virtual void onProxySettingNotification(IZoomVideoSDKProxySettingHandler* handler){}
+    virtual void onSSLCertVerifiedFailNotification(IZoomVideoSDKSSLCertificateInfo* info){}
+    virtual void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, IZoomVideoSDKUser* pUser){}
+    virtual void onCallCRCDeviceStatusChanged(ZoomVideoSDKCRCCallStatus status){}
+    virtual void onAnnotationHelperCleanUp(IZoomVideoSDKAnnotationHelper* helper){}
+    virtual void onAnnotationPrivilegeChange(IZoomVideoSDKUser* pUser, bool enable){}
+    virtual void onAnnotationHelperActived(void* handle){}
+    virtual void onVideoAlphaChannelStatusChanged(bool isAlphaModeOn){}
 
 
 
@@ -588,11 +606,11 @@ int main(int argc, char *argv[])
     {
         return 0;
     }
-    getJWTToken(remote_url,session_name);
+    // getJWTToken(remote_url,session_name);
     printf("begin to join: %s\n", self_dir.c_str());
-    //joinVideoSDKSession(session_name, session_psw, session_token);
+    joinVideoSDKSession(session_name, session_psw, session_token);
     
-    joinVideoSDKSession(session_name, session_psw, FINALJWTToken);
+    // joinVideoSDKSession(session_name, session_psw, FINALJWTToken);
     // startCommandChannel();
     // startLiveStreaming();
     struct sigaction sigIntHandler;

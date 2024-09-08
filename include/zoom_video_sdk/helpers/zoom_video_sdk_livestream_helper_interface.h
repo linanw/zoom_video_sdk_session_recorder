@@ -15,15 +15,15 @@ class IZoomVideoSDKLiveStreamHelper
 {
 public:
     
-	/// \brief start live stream.
-    /// \param streamUrl, the live stream url.
-    /// \param key, the live stream key.
-    /// \param broadcastUrl, the live stream broadcast url.
+	/// \brief Start live stream.
+    /// \param streamUrl The live stream url.
+    /// \param key The live stream key.
+    /// \param broadcastUrl The live stream broadcast url.
     /// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
     ///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
     virtual ZoomVideoSDKErrors startLiveStream(const zchar_t* streamUrl, const zchar_t* key, const zchar_t* broadcastUrl) = 0;
     
-	/// \brief stop live stream.
+	/// \brief Stop live stream.
     /// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
     ///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
     virtual ZoomVideoSDKErrors stopLiveStream() = 0;

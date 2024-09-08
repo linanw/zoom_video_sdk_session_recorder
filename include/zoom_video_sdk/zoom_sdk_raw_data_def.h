@@ -61,6 +61,10 @@ public:
 	/// \brief Get the v-data of the YUV raw data.
 	/// \return A pointer to the v-data of the YUV raw data.
 	virtual char* GetVBuffer() = 0;
+
+	/// \brief Get the alpha mask data of YUV raw data.
+	/// \return A pointer to the alpha mask data.
+	virtual char* GetAlphaBuffer() = 0;
 	
 	/// \brief Get the YUV raw data.
 	/// \return A pointer to the YUV raw data.
@@ -69,6 +73,10 @@ public:
 	/// \brief Get the buffer length of the YUV raw data.
 	/// \return The length of the YUV raw data.
 	virtual unsigned int GetBufferLen() = 0;
+
+	/// \brief Get the alpha mask data length.
+	/// \return The length of alpha mask data.
+	virtual unsigned int GetAlphaBufferLen() = 0;
 	
 	/// \brief Determine if the YUV raw data is limited range mode.
 	/// \return True indicates to the YUV raw data is limited range mode.

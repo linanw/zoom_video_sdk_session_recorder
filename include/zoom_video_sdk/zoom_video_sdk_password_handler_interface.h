@@ -17,7 +17,7 @@ public:
 	virtual ~IZoomVideoSDKPasswordHandler(){}
 
     /// \brief Input session password.
-    /// \param password is the session password.
+    /// \param password The session password.
     /// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
     ///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
     virtual ZoomVideoSDKErrors inputSessionPassword(const zchar_t* password) = 0;

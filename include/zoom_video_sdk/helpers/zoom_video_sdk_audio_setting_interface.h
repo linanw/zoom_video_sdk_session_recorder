@@ -91,7 +91,9 @@ class IZoomVideoSDKAudioSettingHelper
 {
 public:	
 	/// \brief Get the suppress background noise level.
-	/// \return The suppress background noise level.
+	/// \param [out] level The suppress background noise level.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors getSuppressBackgroundNoiseLevel(ZoomVideoSDKSuppressBackgroundNoiseLevel& level) = 0;
 
 	/// \brief Set the suppress background noise level.
@@ -100,14 +102,16 @@ public:
 	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors setSuppressBackgroundNoiseLevel(ZoomVideoSDKSuppressBackgroundNoiseLevel level) = 0;
 
-	/// \brief Enable or disable the original input of mic.
-	/// \param bEnable TRUE indicates to enable the original input of mic.
+	/// \brief Call this method to enable or disable the original input of mic.
+	/// \param bEnable True to enable the original input of microphone or false to disable it.
 	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
 	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors enableMicOriginalInput(bool bEnable) = 0;
 
-	/// \brief Get the flag to enable/disable the original input of mic.
-	/// \return Enabled or disabled.
+	/// \brief Determine whether the original input of the microphone is enabled.
+	/// \param [out] bEnable True if the original input of the microphone is enabled, otherwise false.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors isMicOriginalInputEnable(bool& bEnable) = 0;
 
 	/// \brief Set whether to enable the function of high fidelity music mode or not. 
@@ -118,7 +122,9 @@ public:
 	virtual ZoomVideoSDKErrors enableHighFidelityMusicMode(bool bEnable) = 0;
 
 	/// \brief Check whether the high fidelity music mode is enabled or not.
-	/// \return If it is TRUE, it means the echo cancellation is enabled
+	/// \param [out] bEnable True if the high fidelity music mode is enabled, otherwise false.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors isHighFidelityMusicModeEnable(bool& bEnable) = 0;
 
 	/// \brief Set whether to disable the function of echo cancellation or not. 
@@ -129,22 +135,28 @@ public:
 	virtual ZoomVideoSDKErrors enableEchoCancellation(bool bEnable) = 0;
 
 	/// \brief Check whether the echo cancellation is enabled or not.
-	/// \return If it is TRUE, it means the echo cancellation is disabled
+	/// \param [out] bEnable True if the echo cancellation is enabled, otherwise false.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors isEchoCancellationEnable(bool& bEnable) = 0;
 
 	/// \brief Enable or disable the stereo audio.
-	/// \param bEnable TRUE indicates to enable the stereo audio.
+	/// \param bEnable True indicates to enable the stereo audio.
 	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
 	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	/// remarks This function is valid only if mic original input is enabled, otherwise invalid.
 	virtual ZoomVideoSDKErrors enableStereoAudio(bool bEnable) = 0;
 
 	/// \brief Get the flag to enable/disable the stereo audio.
-	/// \return Enabled or disabled.
+	/// \param [out] bEnable True if the stereo audio is enabled, otherwise false.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors isStereoAudioEnable(bool& bEnable) = 0;
 
 	/// \brief Get the echo cancellation level.
-	/// \return The the echo cancellation level.
+	/// \param [out] level The echo cancellation level.
+	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
+	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum. 
 	virtual ZoomVideoSDKErrors getEchoCancellationLevel(ZoomVideoSDKEchoCancellationLevel& level) = 0;
 
 	/// \brief Set the echo cancellation level.
@@ -152,6 +164,14 @@ public:
 	/// \return If the function succeeds, the return value is ZoomVideoSDKErrors_Success.
 	///Otherwise failed. To get extended error information, see \link ZoomVideoSDKErrors \endlink enum.
 	virtual ZoomVideoSDKErrors setEchoCancellationLevel(ZoomVideoSDKEchoCancellationLevel level) = 0;
+	
+	/// \brief Call this method to enable or disable the auto adjust input of microphone volume.
+	/// \param bEnable true to enable auto adjust input or false to disable it.
+	virtual ZoomVideoSDKErrors enableAutoAdjustMicVolume(bool bEnable) = 0;
+
+	/// \brief Determine whether the original input of the microphone volume is enabled.
+	/// \return true if  auto adjust input  is enabled, otherwise false.
+	virtual ZoomVideoSDKErrors isAutoAdjustMicVolumeEnabled(bool& bEnable) = 0;
 };
 END_ZOOM_VIDEO_SDK_NAMESPACE
 #endif
