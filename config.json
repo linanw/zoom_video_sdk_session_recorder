@@ -1,7 +1,0 @@
-{
-    "session_name": "herochun2022",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiY0FzWUFCcThST1p0cWtnS1lLVUxSRjVTa2o5aWpVdzBXMGlZIiwidmVyc2lvbiI6MSwicm9sZV90eXBlIjoxLCJ1c2VyX2lkZW50aXR5IjoiVXNlciBJRCIsInNlc3Npb25fa2V5IjoiU2Vzc2lvbiBrZXkiLCJpYXQiOjE2NjU1NTM2MTksImV4cCI6MTY2NTcyNjQxOSwidHBjIjoiY3N0YW5zZXNzaW9uMiJ9.930r2_lqMDt1EHlkd7DK1L5cQRdtju8pJrNiCdzd9t8",
-    "session_psw": "12345678",
-    "local_url_for_serial_control": "http://localhost:8888/",
-    "remote_url_for_jwt_token": "https://asdc.cc/video/"
-}

@@ -1,0 +1,7 @@
+{
+    "session_name": "test",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBfa2V5IjoiQ3MyNDJwMWFDV1lxdTlCYkVlRTRwUWZESmhCZGwyM2UzaFhzIiwidmVyc2lvbiI6MSwiaWF0IjoxNzI1NzIyMTg0LCJ1c2VyX2lkZW50aXR5IjoiMTIzIiwiZXhwIjoxNzI1ODk0OTg0LCJ0cGMiOiJUZXN0Iiwic2Vzc2lvbl9rZXkiOiIiLCJyb2xlX3R5cGUiOjF9.WgLalail4U5FwYmm4BIkL52lmeqk8_iUrHaGCg8LidA",
+    "session_psw": "123",
+    "local_url_for_serial_control": "http://localhost:8888/",
+    "remote_url_for_jwt_token": "https://asdc.cc/video/"
+}
