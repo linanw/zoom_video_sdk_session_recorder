@@ -21,7 +21,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include/ffmpeg)
 # link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk)
 link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 
-add_executable(video_sdk_session_recorder ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp ${CMAKE_SOURCE_DIR}/src/video_sdk_session_recorder.cpp)
+add_executable(video_sdk_session_recorder
+    ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp
+    ${CMAKE_SOURCE_DIR}/src/zoom_video_sdk_delegate.cpp
+    ${CMAKE_SOURCE_DIR}/src/video_sdk_session_recorder.cpp)
 
 target_link_libraries(video_sdk_session_recorder PkgConfig::deps)
 target_link_libraries(video_sdk_session_recorder ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1)
