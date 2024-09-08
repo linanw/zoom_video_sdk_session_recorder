@@ -108,13 +108,13 @@ public:
     /// \param pVideoHelper is the pointer to video helper object, see \link IZoomVideoSDKVideoHelper \endlink.
     /// \param userList is the pointer to user object list.
     virtual void onUserVideoStatusChanged(IZoomVideoSDKVideoHelper *pVideoHelper,
-                                          IVideoSDKVector<IZoomVideoSDKUser *> *userList){};
+                                          IVideoSDKVector<IZoomVideoSDKUser *> *userList) {};
 
     /// \brief Triggered when user audio status changed.
     /// \param pAudioHelper is the pointer to audio helper object, see \link IZoomVideoSDKAudioHelper \endlink.
     /// \param userList is the pointer to user object list.
     virtual void onUserAudioStatusChanged(IZoomVideoSDKAudioHelper *pAudioHelper,
-                                          IVideoSDKVector<IZoomVideoSDKUser *> *userList){};
+                                          IVideoSDKVector<IZoomVideoSDKUser *> *userList) {};
 
     /// \brief Triggered when user Share status changed.
     /// \param pShareHelper is the pointer to share helper object, see \link IZoomVideoSDKShareHelper \endlink.
@@ -122,160 +122,155 @@ public:
     /// \param status is the share status of the user.
     virtual void onUserShareStatusChanged(IZoomVideoSDKShareHelper *pShareHelper,
                                           IZoomVideoSDKUser *pUser,
-                                          ZoomVideoSDKShareStatus status){};
+                                          ZoomVideoSDKShareStatus status) {};
 
     /// \brief Triggered when user live stream status changed
     /// \param pLiveStreamHelper is the pointer to live stream helper object, see \link IZoomVideoSDKLiveStreamHelper
     /// \endlink. \param status is the current status of live stream.
     virtual void onLiveStreamStatusChanged(IZoomVideoSDKLiveStreamHelper *pLiveStreamHelper,
-                                           ZoomVideoSDKLiveStreamStatus status){
+                                           ZoomVideoSDKLiveStreamStatus status) {
 
-
-                                           };
+    };
 
     /// \brief Triggered when chat message received.
     /// \param pChatHelper is the pointer to chat helper object, see \link IZoomVideoSDKChatHelper \endlink.
     /// \param messageItem is the pointer to message object
-    virtual void onChatNewMessageNotify(IZoomVideoSDKChatHelper *pChatHelper, IZoomVideoSDKChatMessage *messageItem){
-    //printf("chat message received\n");
-    if (!messageItem)
-        return;
+    virtual void onChatNewMessageNotify(IZoomVideoSDKChatHelper *pChatHelper, IZoomVideoSDKChatMessage *messageItem)
+    {
+        // printf("chat message received\n");
+        if (!messageItem)
+            return;
 
-    //get raw zchar_t* 
-    //for non win32, this is mapped to a char datatype
-    const zchar_t* szMessageContent = messageItem->getContent();
+        // get raw zchar_t*
+        // for non win32, this is mapped to a char datatype
+        const zchar_t *szMessageContent = messageItem->getContent();
 
-  
-    //IZoomVideoSDKUser* pRecievingUser = messageItem->getReceiveUser();
-    //IZoomVideoSDKUser* pSendingUser = messageItem->getSendUser();
+        // IZoomVideoSDKUser* pRecievingUser = messageItem->getReceiveUser();
+        // IZoomVideoSDKUser* pSendingUser = messageItem->getSendUser();
 
+        // convert to string
+        std::string s = szMessageContent;
 
-    //convert to string
-    std::string s = szMessageContent;
-
-
-    if (s.compare("u")==0){
-
-    printf("chat message received : up\n");
-    std::string url_to_call = FINALLocalURL+"up";
-    callNodeJSToSerialHelper(url_to_call);
-    }
-    else  if (s.compare("d")==0){
-
-    printf("chat message received : down\n");
-  std::string url_to_call = FINALLocalURL+"down";
-    callNodeJSToSerialHelper(url_to_call);
-    }
-       else  if (s.compare("l")==0){
-
-    printf("chat message received : left\n");
-    std::string url_to_call = FINALLocalURL+"left";
-    callNodeJSToSerialHelper(url_to_call);
-    }
-       else  if (s.compare("r")==0){
-
-    printf("chat message received : right\n");
-   std::string url_to_call = FINALLocalURL+"right";
-    callNodeJSToSerialHelper(url_to_call);
-    }
-       else  if (s.compare("s")==0){
-
-    printf("chat message received : start\n");
-    std::string url_to_call = FINALLocalURL+"start";
-    callNodeJSToSerialHelper(url_to_call);
-    }
-       else  if (s.compare("c")==0){
-
-    printf("chat message received : catch\n");
-   std::string url_to_call = FINALLocalURL+"catch";
-    callNodeJSToSerialHelper(url_to_call); 
-
-
-
-    }
-
-       else  if (s.compare("stream")==0){
-
-    printf("chat message received : stream\n");
-
-    // Get the IZoomVideoSDKLiveStreamHelper to perform livestream actions.
-    IZoomVideoSDKLiveStreamHelper* pLiveStreamHelper = video_sdk_obj->getLiveStreamHelper();
-
-       // Check if live stream can start.
-   // if (pLiveStreamHelper->canStartLiveStream() == ZoomVideoSDKErrors_Success) {
-
-    const zchar_t* strStreamUrl ="rtmp://a.rtmp.youtube.com/live2";
-    const zchar_t* strKey ="6kft-yswg-uf68-0sj1-49gm";
-    const zchar_t* strBroadcastUrl ="https://www.youtube.com/watch?v=oCJdsKSrTHo";
-    // Call startLiveStream to begin live stream.
-    int err = pLiveStreamHelper->startLiveStream(strStreamUrl, strKey, strBroadcastUrl);
-
-        if (err == ZoomVideoSDKErrors_Success)
+        if (s.compare("u") == 0)
         {
-            // Live stream successfully began.
-              printf(" Live stream successfully began.\n");
 
+            printf("chat message received : up\n");
+            std::string url_to_call = FINALLocalURL + "up";
+            callNodeJSToSerialHelper(url_to_call);
         }
-        else
+        else if (s.compare("d") == 0)
         {
-            // Live stream could not start.
 
-              printf(" Live stream could not start.\n");
-
+            printf("chat message received : down\n");
+            std::string url_to_call = FINALLocalURL + "down";
+            callNodeJSToSerialHelper(url_to_call);
         }
-//}
+        else if (s.compare("l") == 0)
+        {
 
+            printf("chat message received : left\n");
+            std::string url_to_call = FINALLocalURL + "left";
+            callNodeJSToSerialHelper(url_to_call);
+        }
+        else if (s.compare("r") == 0)
+        {
 
-    }
+            printf("chat message received : right\n");
+            std::string url_to_call = FINALLocalURL + "right";
+            callNodeJSToSerialHelper(url_to_call);
+        }
+        else if (s.compare("s") == 0)
+        {
 
- 
+            printf("chat message received : start\n");
+            std::string url_to_call = FINALLocalURL + "start";
+            callNodeJSToSerialHelper(url_to_call);
+        }
+        else if (s.compare("c") == 0)
+        {
+
+            printf("chat message received : catch\n");
+            std::string url_to_call = FINALLocalURL + "catch";
+            callNodeJSToSerialHelper(url_to_call);
+        }
+
+        else if (s.compare("stream") == 0)
+        {
+
+            printf("chat message received : stream\n");
+
+            // Get the IZoomVideoSDKLiveStreamHelper to perform livestream actions.
+            IZoomVideoSDKLiveStreamHelper *pLiveStreamHelper = video_sdk_obj->getLiveStreamHelper();
+
+            // Check if live stream can start.
+            // if (pLiveStreamHelper->canStartLiveStream() == ZoomVideoSDKErrors_Success) {
+
+            const zchar_t *strStreamUrl = "rtmp://a.rtmp.youtube.com/live2";
+            const zchar_t *strKey = "6kft-yswg-uf68-0sj1-49gm";
+            const zchar_t *strBroadcastUrl = "https://www.youtube.com/watch?v=oCJdsKSrTHo";
+            // Call startLiveStream to begin live stream.
+            int err = pLiveStreamHelper->startLiveStream(strStreamUrl, strKey, strBroadcastUrl);
+
+            if (err == ZoomVideoSDKErrors_Success)
+            {
+                // Live stream successfully began.
+                printf(" Live stream successfully began.\n");
+            }
+            else
+            {
+                // Live stream could not start.
+
+                printf(" Live stream could not start.\n");
+            }
+            //}
+        }
     };
 
     /// \brief Triggered when host changed.
     /// \param pUserHelper is the pointer to user helper object, see \link IZoomVideoSDKUserHelper \endlink.
     /// \param pUser is the pointer to user object.
-    virtual void onUserHostChanged(IZoomVideoSDKUserHelper *pUserHelper, IZoomVideoSDKUser *pUser){};
+    virtual void onUserHostChanged(IZoomVideoSDKUserHelper *pUserHelper, IZoomVideoSDKUser *pUser) {};
 
     /// \brief Triggered when active audio user changed.
     /// \param pAudioHelper is the pointer to audio helper object, see \link IZoomVideoSDKAudioHelper \endlink.
     /// \param list is the pointer to user object list.
     virtual void onUserActiveAudioChanged(IZoomVideoSDKAudioHelper *pAudioHelper,
-                                          IVideoSDKVector<IZoomVideoSDKUser *> *list){};
+                                          IVideoSDKVector<IZoomVideoSDKUser *> *list) {};
 
     /// \brief Triggered when session needs password.
     /// \param handler is the pointer to password handler object, see \link IZoomVideoSDKPasswordHandler \endlink.
-    virtual void onSessionNeedPassword(IZoomVideoSDKPasswordHandler *handler){};
+    virtual void onSessionNeedPassword(IZoomVideoSDKPasswordHandler *handler) {};
 
     /// \brief Triggered when password is wrong.
     /// \param handler is the pointer to password handler object, see \link IZoomVideoSDKPasswordHandler \endlink.
-    virtual void onSessionPasswordWrong(IZoomVideoSDKPasswordHandler *handler){};
+    virtual void onSessionPasswordWrong(IZoomVideoSDKPasswordHandler *handler) {};
 
     /// \brief Triggered when mixed audio raw data received.
     /// \param data_ is the pointer to audio raw data, see \link AudioRawData \endlink.
-    virtual void onMixedAudioRawDataReceived(AudioRawData *data_){};
+    virtual void onMixedAudioRawDataReceived(AudioRawData *data_) {};
 
     /// \brief Triggered when one way audio raw data received.
     /// \param data_ is the pointer to audio raw data, see \link AudioRawData \endlink.
     /// \param pUser is the pointer to user object, see \link IZoomVideoSDKUser \endlink.
-    virtual void onOneWayAudioRawDataReceived(AudioRawData *data_, IZoomVideoSDKUser *pUser){};
+    virtual void onOneWayAudioRawDataReceived(AudioRawData *data_, IZoomVideoSDKUser *pUser) {};
 
     /// \brief Triggered when share audio data received.
     /// \param data_ is the pointer to audio raw data, see \link AudioRawData \endlink.
-    virtual void onSharedAudioRawDataReceived(AudioRawData *data_){};
+    virtual void onSharedAudioRawDataReceived(AudioRawData *data_) {};
 
     /// \brief Triggered when user get session manager role.
     /// \param pUser is the pointer to user object, see \link IZoomVideoSDKUser \endlink.
-    virtual void onUserManagerChanged(IZoomVideoSDKUser *pUser){};
+    virtual void onUserManagerChanged(IZoomVideoSDKUser *pUser) {};
 
     /// \brief Triggered when user name changed.
     /// \param pUser is the pointer to user object, see \link IZoomVideoSDKUser \endlink.
-    virtual void onUserNameChanged(IZoomVideoSDKUser *pUser){};
+    virtual void onUserNameChanged(IZoomVideoSDKUser *pUser) {};
 
     /// \brief Callback for when the current user is granted camera control access.
     /// Once the current user sends the camera control request, this callback will be triggered with the result of the
     /// request. \param pUser the pointer to the user who received the request, see \link IZoomVideoSDKUser \endlink.
     /// \param isApproved the result of the camera control request
-    virtual void onCameraControlRequestResult(IZoomVideoSDKUser *pUser, bool isApproved){};
+    virtual void onCameraControlRequestResult(IZoomVideoSDKUser *pUser, bool isApproved) {};
 
     /// \brief Callback interface for when the current user has received a camera control request.
     /// This will be triggered when another user requests control of the current user��s camera.
@@ -286,16 +281,16 @@ public:
     virtual void onCameraControlRequestReceived(
         IZoomVideoSDKUser *pUser,
         ZoomVideoSDKCameraControlRequestType requestType,
-        IZoomVideoSDKCameraControlRequestHandler *pCameraControlRequestHandler){};
+        IZoomVideoSDKCameraControlRequestHandler *pCameraControlRequestHandler) {};
 
     /// \brief Callback for when a message has been received from the command channel.
     ///        Once the command channel is active, this callback is triggered each time a message has been received.
     /// \param pSender The user who sent the command, see \link IZoomVideoSDKUser \endlink.
     /// \param strCmd Received command.
-    virtual void onCommandReceived(IZoomVideoSDKUser *sender, const zchar_t *strCmd){
-        //strCmd;
-    printf("command message received\n");
-
+    virtual void onCommandReceived(IZoomVideoSDKUser *sender, const zchar_t *strCmd)
+    {
+        // strCmd;
+        printf("command message received\n");
     };
 
     /// \brief Callback for when the command channel is ready to be used.
@@ -303,21 +298,23 @@ public:
     ///        this callback will be triggered once the connection attempt has completed.
     /// \param isSuccess true: success, command channel is ready to be used.
     ///        false: Failure, command channel was unable to connect.
-    virtual void onCommandChannelConnectResult(bool isSuccess){
-            if (isSuccess){
+    virtual void onCommandChannelConnectResult(bool isSuccess)
+    {
+        if (isSuccess)
+        {
             printf("command channel connected : success\n");
-            }
+        }
     };
 
     /// \brief Triggered when call Out status changed.
-    virtual void onInviteByPhoneStatus(PhoneStatus status, PhoneFailedReason reason){};
+    virtual void onInviteByPhoneStatus(PhoneStatus status, PhoneFailedReason reason) {};
 
     /// \brief Callback for when the cloud recording status has changed (e.g. paused, stopped, resumed).
     /// \param status cloud recording status defined in \link RecordingStatus \endlink.
-    virtual void onCloudRecordingStatus(RecordingStatus status){};
+    virtual void onCloudRecordingStatus(RecordingStatus status) {};
 
     /// \brief Triggered when host ask you to unmute.
-    virtual void onHostAskUnmute(){};
+    virtual void onHostAskUnmute() {};
 
     virtual void onUserShareStatusChanged(IZoomVideoSDKShareHelper *pShareHelper, IZoomVideoSDKUser *pUser, ZoomVideoSDKShareStatus status, ZoomVideoSDKShareType type) {}
 
@@ -343,50 +340,49 @@ public:
     /// \param speakingLanguage: an object of the spoken message language.
     /// \param transcriptLanguageId: an object of the message language you want to translate.
     virtual void onLiveTranscriptionMsgError(ILiveTranscriptionLanguage *spokenLanguage, ILiveTranscriptionLanguage *transcriptLanguage) {}
-    virtual void onSessionLeave(ZoomVideoSDKSessionLeaveReason eReason){}
-    virtual void onUserRecordingConsent(IZoomVideoSDKUser* pUser){}
-    virtual void onCalloutJoinSuccess(IZoomVideoSDKUser* pUser, const zchar_t* phoneNumber){}
-    virtual void onCloudRecordingStatus(RecordingStatus status, IZoomVideoSDKRecordingConsentHandler* pHandler){}
-    virtual void onCameraListChanged(){}
-    virtual void onOriginalLanguageMsgReceived(ILiveTranscriptionMessageInfo* messageInfo){}
-    virtual void onLiveTranscriptionMsgInfoReceived(ILiveTranscriptionMessageInfo* messageInfo){}
-    virtual void onChatMsgDeleteNotification(IZoomVideoSDKChatHelper* pChatHelper, const zchar_t* msgID, ZoomVideoSDKChatMessageDeleteType deleteBy){}
-    virtual void onChatPrivilegeChanged(IZoomVideoSDKChatHelper* pChatHelper, ZoomVideoSDKChatPrivilegeType privilege){}
-    virtual void onSendFileStatus(IZoomVideoSDKSendFile* file, const FileTransferStatus& status){}
-    virtual void onReceiveFileStatus(IZoomVideoSDKReceiveFile* file, const FileTransferStatus& status){}
-    virtual void onProxyDetectComplete(){}
-    virtual void onProxySettingNotification(IZoomVideoSDKProxySettingHandler* handler){}
-    virtual void onSSLCertVerifiedFailNotification(IZoomVideoSDKSSLCertificateInfo* info){}
-    virtual void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, IZoomVideoSDKUser* pUser){}
-    virtual void onCallCRCDeviceStatusChanged(ZoomVideoSDKCRCCallStatus status){}
-    virtual void onAnnotationHelperCleanUp(IZoomVideoSDKAnnotationHelper* helper){}
-    virtual void onAnnotationPrivilegeChange(IZoomVideoSDKUser* pUser, bool enable){}
-    virtual void onAnnotationHelperActived(void* handle){}
-    virtual void onVideoAlphaChannelStatusChanged(bool isAlphaModeOn){}
-
-
+    virtual void onSessionLeave(ZoomVideoSDKSessionLeaveReason eReason) {}
+    virtual void onUserRecordingConsent(IZoomVideoSDKUser *pUser) {}
+    virtual void onCalloutJoinSuccess(IZoomVideoSDKUser *pUser, const zchar_t *phoneNumber) {}
+    virtual void onCloudRecordingStatus(RecordingStatus status, IZoomVideoSDKRecordingConsentHandler *pHandler) {}
+    virtual void onCameraListChanged() {}
+    virtual void onOriginalLanguageMsgReceived(ILiveTranscriptionMessageInfo *messageInfo) {}
+    virtual void onLiveTranscriptionMsgInfoReceived(ILiveTranscriptionMessageInfo *messageInfo) {}
+    virtual void onChatMsgDeleteNotification(IZoomVideoSDKChatHelper *pChatHelper, const zchar_t *msgID, ZoomVideoSDKChatMessageDeleteType deleteBy) {}
+    virtual void onChatPrivilegeChanged(IZoomVideoSDKChatHelper *pChatHelper, ZoomVideoSDKChatPrivilegeType privilege) {}
+    virtual void onSendFileStatus(IZoomVideoSDKSendFile *file, const FileTransferStatus &status) {}
+    virtual void onReceiveFileStatus(IZoomVideoSDKReceiveFile *file, const FileTransferStatus &status) {}
+    virtual void onProxyDetectComplete() {}
+    virtual void onProxySettingNotification(IZoomVideoSDKProxySettingHandler *handler) {}
+    virtual void onSSLCertVerifiedFailNotification(IZoomVideoSDKSSLCertificateInfo *info) {}
+    virtual void onUserVideoNetworkStatusChanged(ZoomVideoSDKNetworkStatus status, IZoomVideoSDKUser *pUser) {}
+    virtual void onCallCRCDeviceStatusChanged(ZoomVideoSDKCRCCallStatus status) {}
+    virtual void onAnnotationHelperCleanUp(IZoomVideoSDKAnnotationHelper *helper) {}
+    virtual void onAnnotationPrivilegeChange(IZoomVideoSDKUser *pUser, bool enable) {}
+    virtual void onAnnotationHelperActived(void *handle) {}
+    virtual void onVideoAlphaChannelStatusChanged(bool isAlphaModeOn) {}
 
     static int callNodeJSToSerialHelper(std::string local_url)
-{
-  CURL *curl;
-  CURLcode res;
+    {
+        CURL *curl;
+        CURLcode res;
 
-  curl = curl_easy_init();
-  if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, local_url.c_str());
+        curl = curl_easy_init();
+        if (curl)
+        {
+            curl_easy_setopt(curl, CURLOPT_URL, local_url.c_str());
 
-    /* Perform the request, res will get the return code */
-    res = curl_easy_perform(curl);
-    /* Check for errors */
-    if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
+            /* Perform the request, res will get the return code */
+            res = curl_easy_perform(curl);
+            /* Check for errors */
+            if (res != CURLE_OK)
+                fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                        curl_easy_strerror(res));
 
-    /* always cleanup */
-    curl_easy_cleanup(curl);
-  }
-  return 0;
-}
+            /* always cleanup */
+            curl_easy_cleanup(curl);
+        }
+        return 0;
+    }
 };
 
 void joinVideoSDKSession(std::string &session_name, std::string &session_psw, std::string &session_token)
@@ -420,106 +416,102 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     IZoomVideoSDKSession *session = NULL;
     if (video_sdk_obj)
         session = video_sdk_obj->joinSession(session_context);
-
-       
 }
 
-void startLiveStreaming(){
+void startLiveStreaming()
+{
     // Get the IZoomVideoSDKLiveStreamHelper to perform livestream actions.
-    IZoomVideoSDKLiveStreamHelper* pLiveStreamHelper = video_sdk_obj->getLiveStreamHelper();
+    IZoomVideoSDKLiveStreamHelper *pLiveStreamHelper = video_sdk_obj->getLiveStreamHelper();
 
-       // Check if live stream can start.
- if (pLiveStreamHelper->canStartLiveStream() == ZoomVideoSDKErrors_Success) {
+    // Check if live stream can start.
+    if (pLiveStreamHelper->canStartLiveStream() == ZoomVideoSDKErrors_Success)
+    {
 
-    const zchar_t* strStreamUrl ="rtmp://a.rtmp.youtube.com/live2";
-    const zchar_t* strKey ="6kft-yswg-uf68-0sj1-49gm";
-    const zchar_t* strBroadcastUrl ="https://www.youtube.com/watch?v=oCJdsKSrTHo";
-    // Call startLiveStream to begin live stream.
-    int err = pLiveStreamHelper->startLiveStream(strStreamUrl, strKey, strBroadcastUrl);
+        const zchar_t *strStreamUrl = "rtmp://a.rtmp.youtube.com/live2";
+        const zchar_t *strKey = "6kft-yswg-uf68-0sj1-49gm";
+        const zchar_t *strBroadcastUrl = "https://www.youtube.com/watch?v=oCJdsKSrTHo";
+        // Call startLiveStream to begin live stream.
+        int err = pLiveStreamHelper->startLiveStream(strStreamUrl, strKey, strBroadcastUrl);
 
         if (err == ZoomVideoSDKErrors_Success)
         {
             // Live stream successfully began.
-              printf(" Live stream successfully began.\n");
-
+            printf(" Live stream successfully began.\n");
         }
         else
         {
             // Live stream could not start.
 
-              printf(" Live stream could not start.\n");
-
+            printf(" Live stream could not start.\n");
         }
+    }
 }
-}
-void startCommandChannel(){
+void startCommandChannel()
+{
 
-//     IZoomVideoSDKCmdChannel* commandChannel = video_sdk_obj->getCmdChannel();
-//   commandChannel->sendCommand(NULL,"init");
-
+    //     IZoomVideoSDKCmdChannel* commandChannel = video_sdk_obj->getCmdChannel();
+    //   commandChannel->sendCommand(NULL,"init");
 }
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
 
-    //TODO dreamtcs improve if we have time
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    std::string response=(char*)contents;
-    std::string response2= response.substr(14,response.length());
-    FINALJWTToken =response2.substr(0,response2.length()-2);
+    // TODO dreamtcs improve if we have time
+    ((std::string *)userp)->append((char *)contents, size * nmemb);
+    std::string response = (char *)contents;
+    std::string response2 = response.substr(14, response.length());
+    FINALJWTToken = response2.substr(0, response2.length() - 2);
     return size * nmemb;
 }
 
+int getJWTToken(std::string remote_url, std::string session_name)
+{
+    CURL *curl;
+    CURLcode res;
+    std::string readBuffer;
 
+    char *json = NULL;
+    struct curl_slist *headers = NULL;
 
-int getJWTToken(std::string remote_url, std::string session_name){
-  CURL *curl;
-  CURLcode res;
-  std::string readBuffer;
-  
-  char *json = NULL;
-  struct curl_slist *headers = NULL;
+    curl = curl_easy_init();
+    if (curl)
+    {
+        // curl_easy_setopt(curl, CURLOPT_URL, "https://asdc.cc/video/");
+        curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
 
-  curl = curl_easy_init();
-  if(curl) {
-    //curl_easy_setopt(curl, CURLOPT_URL, "https://asdc.cc/video/");
-    curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+        // buffer size
+        curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+        // region for callback
+        //  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        //  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        //  res = curl_easy_perform(curl);
+        //  curl_easy_cleanup(curl);
+        // std::cout << readBuffer << std::endl;
+        // region for call back
 
-    //buffer size
-      curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
-    //region for callback
-    // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    // curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    // res = curl_easy_perform(curl);
-    // curl_easy_cleanup(curl);
-    //std::cout << readBuffer << std::endl;
-    //region for call back
+        // headers
+        headers = curl_slist_append(headers, "Expect:");
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-   //headers
-   headers = curl_slist_append(headers, "Expect:");
-   headers = curl_slist_append(headers, "Content-Type: application/json");
-   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  
-   //std::string json = "{\"sessionName\":\"herochun6871\",\"role\":1,\"user_identity\":\"user_identity6871\",\"session_key\":\"session_key6871\"}";
-   std::string json = "{\"sessionName\":\""+session_name+"\",\"role\":1,\"user_identity\":\"user_identity6871\",\"session_key\":\"session_key6871\"}";
-   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
-   //callback
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    //perform
-    res = curl_easy_perform(curl);
-    std::cout << readBuffer << std::endl;
-    /* Check for errors */
-    if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
- 
-    /* always cleanup */
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
-    
-  }
-  return 0;
+        // std::string json = "{\"sessionName\":\"herochun6871\",\"role\":1,\"user_identity\":\"user_identity6871\",\"session_key\":\"session_key6871\"}";
+        std::string json = "{\"sessionName\":\"" + session_name + "\",\"role\":1,\"user_identity\":\"user_identity6871\",\"session_key\":\"session_key6871\"}";
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+        // callback
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        // perform
+        res = curl_easy_perform(curl);
+        std::cout << readBuffer << std::endl;
+        /* Check for errors */
+        if (res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
 
+        /* always cleanup */
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+    }
+    return 0;
 }
 
 gboolean timeout_callback(gpointer data)
@@ -566,7 +558,6 @@ int main(int argc, char *argv[])
             break;
         }
 
-
         Json json_name = config_json["session_name"];
         Json json_psw = config_json["session_psw"];
         Json json_token = config_json["token"];
@@ -588,14 +579,14 @@ int main(int argc, char *argv[])
             printf("config session_token: %s\n", session_token.c_str());
         }
 
-         if (!json_local_url.is_null())
+        if (!json_local_url.is_null())
         {
             local_url = json_local_url.get<std::string>();
-            FINALLocalURL=local_url;
+            FINALLocalURL = local_url;
             printf("config local_url: %s\n", local_url.c_str());
         }
 
-         if (!json_remote_url.is_null())
+        if (!json_remote_url.is_null())
         {
             remote_url = json_remote_url.get<std::string>();
             printf("config remote_url: %s\n", remote_url.c_str());
@@ -609,7 +600,7 @@ int main(int argc, char *argv[])
     // getJWTToken(remote_url,session_name);
     printf("begin to join: %s\n", self_dir.c_str());
     joinVideoSDKSession(session_name, session_psw, session_token);
-    
+
     // joinVideoSDKSession(session_name, session_psw, FINALJWTToken);
     // startCommandChannel();
     // startLiveStreaming();

@@ -10,9 +10,10 @@ make
 ```
 
 # todo
-1. stream to rtmp (currently not working, handled in onchatmessagereceived)
-call localhost:8888
 
+1. stream to rtmp (currently not working, handled in onchatmessagereceived)
+   call localhost:8888
 
 # Notes
+
 1. libvideosdk.so shall rename to its soname: libvideosdk.so.1 to be found by executable at runtime.

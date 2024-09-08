@@ -2,7 +2,7 @@ sudo apt update
 sudo apt -y install libcurl4-openssl-dev
 cmake -B build
 cd build
-make 
+make
 cd ..
 
 set -x
