@@ -32,15 +32,11 @@ target_link_libraries(video_sdk_session_recorder swscale avfilter)
 
 # Extract the required libraries from archives to the lib directory
 if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/zoom_video_sdk.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
 if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/ffmpeg")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib/ffmpeg.tar.gz -C lib/ffmpeg WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-endif()
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/qt_libs")
-    execute_process(COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib/qt_libs.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/ffmpeg.tar.gz -C lib/ffmpeg WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)

@@ -3,6 +3,5 @@ build/
 .vscode/
 !.vscode/c_cpp_properties.json
 *.mkv
-lib/ffmpeg
-lib/zoom_video_sdk/
+lib/
 config.json
