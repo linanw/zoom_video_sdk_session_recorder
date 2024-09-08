@@ -16,6 +16,7 @@
 #include "zoom_video_sdk_api.h"
 #include "zoom_video_sdk_def.h"
 #include "zoom_video_sdk_delegate.h"
+#include "hikvision_camera_operation.h"
 
 using Json = nlohmann::json;
 USING_ZOOM_VIDEO_SDK_NAMESPACE
@@ -28,7 +29,8 @@ std::string getSelfDirPath()
 {
     char dest[PATH_MAX];
     memset(dest, 0, sizeof(dest)); // readlink does not null terminate!
-    if (readlink("/proc/self/exe", dest, PATH_MAX) == -1){
+    if (readlink("/proc/self/exe", dest, PATH_MAX) == -1)
+    {
         return "";
     }
     char *tmp = strrchr(dest, '/');
@@ -252,6 +254,9 @@ int main(int argc, char *argv[])
     {
         return 0;
     }
+
+    HikvisionCameraOperation::Demo_Capture();
+
     // getJWTToken(remote_url,session_name);
     printf("begin to join: %s\n", self_dir.c_str());
     joinVideoSDKSession(session_name, session_psw, session_token);
