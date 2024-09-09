@@ -6,22 +6,37 @@ project(VideoSDKSessionRecorder CXX)
 # add_definitions(-std=c++11)
 # set(CMAKE_BUILD_TYPE Debug)
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0 gio-2.0)
 
+# Prepare the required include directories for compiling
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/zoom_video_sdk)
 include_directories(${CMAKE_SOURCE_DIR}/include/ffmpeg)
+
+# Prepare the required libraries for linking
+# Extract the required libraries from archives to the lib directory
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk")
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/zoom_video_sdk.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
+
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/ffmpeg")
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/ffmpeg.tar.gz -C lib/ffmpeg WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
+
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/hikvision_sdk")
+    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/hikvision_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/hikvision_sdk.tar.gz -C lib/hikvision_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
 
 # link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk)
 link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 link_directories(${CMAKE_SOURCE_DIR}/lib/hikvision_sdk)
 
+# Add the executable
 add_executable(video_sdk_session_recorder
     ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp
     ${CMAKE_SOURCE_DIR}/src/hikvision_camera_operation.cpp
@@ -36,24 +51,10 @@ target_link_libraries(video_sdk_session_recorder avutil)
 target_link_libraries(video_sdk_session_recorder swscale avfilter)
 target_link_libraries(video_sdk_session_recorder hcnetsdk)
 
-# Extract the required libraries from archives to the lib directory
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/zoom_video_sdk.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-endif()
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/ffmpeg")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/ffmpeg.tar.gz -C lib/ffmpeg WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-endif()
-
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/hikvision_sdk")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/hikvision_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/hikvision_sdk.tar.gz -C lib/hikvision_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-endif()
-
+# Prepare for running the executable
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)
 file(COPY ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 file(COPY ${CMAKE_SOURCE_DIR}/lib/hikvision_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)
-
-# Create logs directory in the home directory
 execute_process(COMMAND mkdir -p .zoom/logs WORKING_DIRECTORY $ENV{HOME})
 
 # Set RPATH to look in the same directory as the executable ($ORIGIN)
