@@ -17,6 +17,7 @@
 #include "zoom_video_sdk_def.h"
 #include "zoom_video_sdk_delegate.h"
 #include "hikvision_camera_operation.h"
+#include "HCNetSDK.h"
 
 using Json = nlohmann::json;
 USING_ZOOM_VIDEO_SDK_NAMESPACE
@@ -255,7 +256,10 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    HikvisionCameraOperation::Demo_Capture();
+    HikvisionCameraOperation *hikCam = new HikvisionCameraOperation();
+    hikCam->ptzControl(PAN_LEFT);
+
+    return 0;
 
     // getJWTToken(remote_url,session_name);
     printf("begin to join: %s\n", self_dir.c_str());
