@@ -10,6 +10,12 @@
 #include "HCNetSDK.h"
 #endif
 
+enum ISAPI_METHOD
+{
+    ISAPI_METHOD_GET = 0,
+    ISAPI_METHOD_PUT = 1,
+};
+
 /*
 LIGHT_PWRON
 2
@@ -122,15 +128,23 @@ Tilt up and zoom in
 TILT_UP_ZOOM_OUT
 73
 Tilt up and zoom out*/
-class HikvisionCameraOperation
+class HikvisionCamera
 {
     long _lUserID;
     NET_DVR_USER_LOGIN_INFO _struLoginInfo = {0};
     NET_DVR_DEVICEINFO_V40 _struDeviceInfoV40 = {0};
 public:
-    HikvisionCameraOperation();
-    ~HikvisionCameraOperation();
-    int ptzControl(DWORD ptzCommand);
+    HikvisionCamera();
+    ~HikvisionCamera();
+    int PtzControlStart(DWORD ptzCommand);
+    int PtzControlStop(DWORD ptzCommand);
+    int PtzControl(DWORD ptzCommand, int isStop);
+    int PtzControlAndStop(DWORD ptzCommand);
+    int PtzControlAndStop(DWORD ptzCommand, int millisecondsToStop);
+    int Infrared();
+    int getCap();
+    int InvokeISAPI(ISAPI_METHOD method, const char* apiPath);
+    int InvokeISAPI(ISAPI_METHOD method, const char* apiPath, const char* requestXml);
     int tiltUp();
     int panLeft();
     int tiltDown();

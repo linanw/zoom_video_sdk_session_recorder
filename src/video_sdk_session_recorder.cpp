@@ -16,7 +16,7 @@
 #include "zoom_video_sdk_api.h"
 #include "zoom_video_sdk_def.h"
 #include "zoom_video_sdk_delegate.h"
-#include "hikvision_camera_operation.h"
+#include "hikvision_camera.h"
 #include "HCNetSDK.h"
 
 using Json = nlohmann::json;
@@ -256,8 +256,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    HikvisionCameraOperation *hikCam = new HikvisionCameraOperation();
-    hikCam->ptzControl(PAN_LEFT);
+    HikvisionCamera *hikCam = new HikvisionCamera();
+    hikCam->InvokeISAPI(
+        ISAPI_METHOD_GET,
+        "/ISAPI/Image/channels/1/ircutFilter",
+        "<IrcutFilter><IrcutFilterType>day</IrcutFilterType><nightToDayFilterLevel>4</nightToDayFilterLevel></IrcutFilter>");
+    hikCam->InvokeISAPI(
+        ISAPI_METHOD_GET,
+        "/ISAPI/System/deviceInfo");
 
     return 0;
 

@@ -39,7 +39,7 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/hikvision_sdk)
 # Add the executable
 add_executable(video_sdk_session_recorder
     ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp
-    ${CMAKE_SOURCE_DIR}/src/hikvision_camera_operation.cpp
+    ${CMAKE_SOURCE_DIR}/src/hikvision_camera.cpp
     ${CMAKE_SOURCE_DIR}/src/zoom_video_sdk_delegate.cpp
     ${CMAKE_SOURCE_DIR}/src/video_sdk_session_recorder.cpp)
 
