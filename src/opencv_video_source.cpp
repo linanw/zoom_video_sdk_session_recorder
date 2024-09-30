@@ -34,7 +34,7 @@ void sendVideoToVideoSource(IZoomVideoSDKVideoSender *video_sender, string video
 		else
 		{
 			//--- GRAB AND WRITE LOOP
-			cout << "Start grabbing" << endl;
+			cout << "Start play " << endl;
 			while (video_play_flag > 0)
 			{
 				// wait for a new frame from camera and store it into 'frame'
@@ -42,7 +42,7 @@ void sendVideoToVideoSource(IZoomVideoSDKVideoSender *video_sender, string video
 				// check if we succeeded
 				if (frame.empty())
 				{
-					cerr << "ERROR! blank frame grabbed\n";
+					cerr << "Video file finished\n";
 					break;
 				}
 				Mat resizedFrame;
