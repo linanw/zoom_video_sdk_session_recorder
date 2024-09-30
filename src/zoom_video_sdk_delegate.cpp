@@ -1,7 +1,7 @@
 #include "zoom_video_sdk_delegate.h"
 
 #include "zoom_video_sdk_chat_message_interface.h"
-#include "raw_data_ffmpeg_encoder.h"
+// #include "raw_data_ffmpeg_encoder.h"
 #include <glib.h>
 #include <curl/curl.h>
 
@@ -89,7 +89,7 @@ void ZoomVideoSDKDelegate::onUserLeave(IZoomVideoSDKUserHelper *pUserHelper, IVi
             IZoomVideoSDKUser *user = userList->GetItem(index);
             if (user)
             {
-                RawDataFFMPEGEncoder::stop_encoding_for(user);
+                // RawDataFFMPEGEncoder::stop_encoding_for(user);
             }
         }
     }

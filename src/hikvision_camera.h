@@ -1,5 +1,6 @@
-#ifndef _PUBLIC_H_
-#define _PUBLIC_H_
+#ifndef _HIKVISION_CAMERA_H_
+#define _HIKVISION_CAMERA_H_
+
 #define HPR_OK 0
 #define HPR_ERROR -1
 
@@ -8,7 +9,6 @@
 #endif
 
 #include "HCNetSDK.h"
-#endif
 
 enum ISAPI_METHOD
 {
@@ -128,6 +128,7 @@ Tilt up and zoom in
 TILT_UP_ZOOM_OUT
 73
 Tilt up and zoom out*/
+
 class HikvisionCamera
 {
     long _lUserID;
@@ -145,39 +146,8 @@ public:
     int getCap();
     int InvokeISAPI(ISAPI_METHOD method, const char* apiPath);
     int InvokeISAPI(ISAPI_METHOD method, const char* apiPath, const char* requestXml);
-    int tiltUp();
-    int panLeft();
-    int tiltDown();
-    // int panRight();
-    // int zoomIn();
-    // int zoomOut();
-    // int focusNear();
-    // int focusFar();
-    // int irisOpen();
-    // int irisClose();
-    // int lightPwrOn();
-    // int wiperPwrOn();
-    // int fanPwrOn();
-    // int heaterPwrOn();
-    // int auxPwrOn1();
-    // int auxPwrOn2();
-    // int panAuto();
-    // int tiltDownZoomIn();
-    // int tiltDownZoomOut();
-    // int panLeftZoomIn();
-    // int panLeftZoomOut();
-    // int panRightZoomIn();
-    // int panRightZoomOut();
-    // int upLeftZoomIn();
-    // int upLeftZoomOut();
-    // int upRightZoomIn();
-    // int upRightZoomOut();
-    // int downLeftZoomIn();
-    // int downLeftZoomOut();
-    // int downRightZoomIn();
-    // int downRightZoomOut();
-    // int tiltUpZoomIn();
-    // int tiltUpZoomOut();
-
+    int GetStream(REALDATACALLBACK fRealDataCallBack_V30 = NULL);
     static int Demo_Capture();
 };
+
+#endif // _HIKVISION_CAMERA_H_

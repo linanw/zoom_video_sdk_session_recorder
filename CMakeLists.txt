@@ -11,12 +11,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0 gio-2.0)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0 gio-2.0 libavcodec libavformat libavutil libswscale)
+find_package(PahoMqttCpp REQUIRED)
+find_package(OpenCV REQUIRED)
+
 
 # Prepare the required include directories for compiling
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/zoom_video_sdk)
-include_directories(${CMAKE_SOURCE_DIR}/include/ffmpeg)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Prepare the required libraries for linking
 # Extract the required libraries from archives to the lib directory
@@ -24,32 +27,26 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk")
     execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/zoom_video_sdk.tar.gz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/ffmpeg")
-    execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/ffmpeg COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/ffmpeg.tar.gz -C lib/ffmpeg WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-endif()
-
 if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/hikvision_sdk")
     execute_process(COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/hikvision_sdk COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/hikvision_sdk.tar.gz -C lib/hikvision_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
-# link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk)
-link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 link_directories(${CMAKE_SOURCE_DIR}/lib/hikvision_sdk)
 
 # Add the executable
 add_executable(video_sdk_session_recorder
-    ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp
+${CMAKE_SOURCE_DIR}/src/zoom_video_sdk_delegate.cpp
+    # ${CMAKE_SOURCE_DIR}/src/raw_data_ffmpeg_encoder.cpp
     ${CMAKE_SOURCE_DIR}/src/hikvision_camera.cpp
-    ${CMAKE_SOURCE_DIR}/src/zoom_video_sdk_delegate.cpp
+    ${CMAKE_SOURCE_DIR}/src/hikvision_video_source.cpp
+    ${CMAKE_SOURCE_DIR}/src/yuv_writer.cpp
     ${CMAKE_SOURCE_DIR}/src/video_sdk_session_recorder.cpp)
 
 target_link_libraries(video_sdk_session_recorder PkgConfig::deps)
 target_link_libraries(video_sdk_session_recorder ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1)
-target_link_libraries(video_sdk_session_recorder z pthread avformat)
-target_link_libraries(video_sdk_session_recorder z lzma swresample avcodec)
-target_link_libraries(video_sdk_session_recorder avutil)
-target_link_libraries(video_sdk_session_recorder swscale avfilter)
 target_link_libraries(video_sdk_session_recorder hcnetsdk)
+target_link_libraries(video_sdk_session_recorder paho-mqttpp3)
+target_link_libraries(video_sdk_session_recorder ${OpenCV_LIBS})
 
 # Prepare for running the executable
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)
