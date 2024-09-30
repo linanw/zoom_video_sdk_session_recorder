@@ -28,6 +28,7 @@ void sendVideoToVideoSource(IZoomVideoSDKVideoSender *video_sender, string video
 		if (!cap.isOpened())
 		{
 			cerr << "ERROR! Unable to open camera\n";
+			cout << getBuildInformation() << endl;
 			video_play_flag = 0;
 			break;
 		}

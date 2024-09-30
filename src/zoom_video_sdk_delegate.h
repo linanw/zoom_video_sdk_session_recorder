@@ -7,7 +7,6 @@ class ZoomVideoSDKDelegate : public IZoomVideoSDKDelegate
 {
     GMainLoop *_loop;
     IZoomVideoSDK *_video_sdk_obj;
-    std::string _claw_control_url;
 
  	/// \brief Invoked when the current user joins the session.
     virtual void onSessionJoin();
@@ -277,5 +276,5 @@ class ZoomVideoSDKDelegate : public IZoomVideoSDKDelegate
 	virtual void onVideoAlphaChannelStatusChanged(bool isAlphaModeOn);
 
 public:
-    ZoomVideoSDKDelegate(GMainLoop *loop, IZoomVideoSDK *video_sdk_obj, std::string claw_control_url);
+    ZoomVideoSDKDelegate(GMainLoop *loop, IZoomVideoSDK *video_sdk_obj);
 };

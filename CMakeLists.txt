@@ -6,7 +6,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0 gio-2.0 libavcodec libavformat libavutil libswscale)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0 gio-2.0)
 find_package(OpenCV REQUIRED)
 
 

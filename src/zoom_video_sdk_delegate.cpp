@@ -3,36 +3,11 @@
 #include "zoom_video_sdk_chat_message_interface.h"
 // #include "raw_data_ffmpeg_encoder.h"
 #include <glib.h>
-#include <curl/curl.h>
 
-static int callNodeJSToSerialHelper(std::string local_url)
-{
-    CURL *curl;
-    CURLcode res;
-
-    curl = curl_easy_init();
-    if (curl)
-    {
-        curl_easy_setopt(curl, CURLOPT_URL, local_url.c_str());
-
-        /* Perform the request, res will get the return code */
-        res = curl_easy_perform(curl);
-        /* Check for errors */
-        if (res != CURLE_OK)
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
-
-        /* always cleanup */
-        curl_easy_cleanup(curl);
-    }
-    return 0;
-}
-
-ZoomVideoSDKDelegate::ZoomVideoSDKDelegate(GMainLoop *loop, IZoomVideoSDK *video_sdk_obj, std::string claw_control_url)
+ZoomVideoSDKDelegate::ZoomVideoSDKDelegate(GMainLoop *loop, IZoomVideoSDK *video_sdk_obj)
 {
     _loop = loop;
     _video_sdk_obj = video_sdk_obj;
-    _claw_control_url = claw_control_url;
 }
 
 /// \brief Triggered when user enter the session.
@@ -127,96 +102,7 @@ void ZoomVideoSDKDelegate::onLiveStreamStatusChanged(IZoomVideoSDKLiveStreamHelp
 /// \brief Triggered when chat message received.
 /// \param pChatHelper is the pointer to chat helper object, see \link IZoomVideoSDKChatHelper \endlink.
 /// \param messageItem is the pointer to message object
-void ZoomVideoSDKDelegate::onChatNewMessageNotify(IZoomVideoSDKChatHelper *pChatHelper, IZoomVideoSDKChatMessage *messageItem)
-{
-    // printf("chat message received\n");
-    if (!messageItem)
-        return;
-
-    // get raw zchar_t*
-    // for non win32, this is mapped to a char datatype
-    const zchar_t *szMessageContent = messageItem->getContent();
-
-    // IZoomVideoSDKUser* pRecievingUser = messageItem->getReceiveUser();
-    // IZoomVideoSDKUser* pSendingUser = messageItem->getSendUser();
-
-    // convert to string
-    std::string s = szMessageContent;
-
-    if (s.compare("u") == 0)
-    {
-
-        printf("chat message received : up\n");
-        std::string url_to_call = _claw_control_url + "up";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-    else if (s.compare("d") == 0)
-    {
-
-        printf("chat message received : down\n");
-        std::string url_to_call = _claw_control_url + "down";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-    else if (s.compare("l") == 0)
-    {
-
-        printf("chat message received : left\n");
-        std::string url_to_call = _claw_control_url + "left";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-    else if (s.compare("r") == 0)
-    {
-
-        printf("chat message received : right\n");
-        std::string url_to_call = _claw_control_url + "right";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-    else if (s.compare("s") == 0)
-    {
-
-        printf("chat message received : start\n");
-        std::string url_to_call = _claw_control_url + "start";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-    else if (s.compare("c") == 0)
-    {
-
-        printf("chat message received : catch\n");
-        std::string url_to_call = _claw_control_url + "catch";
-        callNodeJSToSerialHelper(url_to_call);
-    }
-
-    else if (s.compare("stream") == 0)
-    {
-
-        printf("chat message received : stream\n");
-
-        // Get the IZoomVideoSDKLiveStreamHelper to perform livestream actions.
-        IZoomVideoSDKLiveStreamHelper *pLiveStreamHelper = _video_sdk_obj->getLiveStreamHelper();
-
-        // Check if live stream can start.
-        // if (pLiveStreamHelper->canStartLiveStream() == ZoomVideoSDKErrors_Success) {
-
-        const zchar_t *strStreamUrl = "rtmp://a.rtmp.youtube.com/live2";
-        const zchar_t *strKey = "6kft-yswg-uf68-0sj1-49gm";
-        const zchar_t *strBroadcastUrl = "https://www.youtube.com/watch?v=oCJdsKSrTHo";
-        // Call startLiveStream to begin live stream.
-        int err = pLiveStreamHelper->startLiveStream(strStreamUrl, strKey, strBroadcastUrl);
-
-        if (err == ZoomVideoSDKErrors_Success)
-        {
-            // Live stream successfully began.
-            printf(" Live stream successfully began.\n");
-        }
-        else
-        {
-            // Live stream could not start.
-
-            printf(" Live stream could not start.\n");
-        }
-        //}
-    }
-};
+void ZoomVideoSDKDelegate::onChatNewMessageNotify(IZoomVideoSDKChatHelper *pChatHelper, IZoomVideoSDKChatMessage *messageItem) {};
 
 /// \brief Triggered when host changed.
 /// \param pUserHelper is the pointer to user helper object, see \link IZoomVideoSDKUserHelper \endlink.

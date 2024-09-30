@@ -19,8 +19,6 @@ using Json = nlohmann::json;
 USING_ZOOM_VIDEO_SDK_NAMESPACE
 IZoomVideoSDK *video_sdk_obj;
 GMainLoop *loop;
-std::string FINALJWTToken;
-std::string claw_control_url;
 
 std::string getSelfDirPath()
 {
@@ -54,7 +52,7 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     {
         return;
     }
-    IZoomVideoSDKDelegate *listener = new ZoomVideoSDKDelegate(loop, video_sdk_obj, claw_control_url);
+    IZoomVideoSDKDelegate *listener = new ZoomVideoSDKDelegate(loop, video_sdk_obj);
     OpenCVVideoSource *hikvisonVideoSource = new OpenCVVideoSource();
     video_sdk_obj->addListener(dynamic_cast<IZoomVideoSDKDelegate *>(listener));
     ZoomVideoSDKSessionContext session_context;
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
     t.seekg(0);
     t.read(&buffer[0], size);
 
-    std::string session_name, session_psw, session_token, local_url, remote_url;
+    std::string session_name, session_psw, session_token;
     do
     {
         Json config_json;
@@ -119,8 +117,6 @@ int main(int argc, char *argv[])
         Json json_name = config_json["session_name"];
         Json json_psw = config_json["session_psw"];
         Json json_token = config_json["token"];
-        Json json_local_url = config_json["local_url_for_serial_control"];
-        Json json_remote_url = config_json["remote_url_for_jwt_token"];
         if (!json_name.is_null())
         {
             session_name = json_name.get<std::string>();
@@ -135,19 +131,6 @@ int main(int argc, char *argv[])
         {
             session_token = json_token.get<std::string>();
             printf("config session_token: %s\n", session_token.c_str());
-        }
-
-        if (!json_local_url.is_null())
-        {
-            local_url = json_local_url.get<std::string>();
-            claw_control_url = local_url;
-            printf("config local_url: %s\n", local_url.c_str());
-        }
-
-        if (!json_remote_url.is_null())
-        {
-            remote_url = json_remote_url.get<std::string>();
-            printf("config remote_url: %s\n", remote_url.c_str());
         }
     } while (false);
 
