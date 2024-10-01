@@ -29,6 +29,11 @@ if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1" OR NOT E
         COMMAND mv ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/h ${CMAKE_SOURCE_DIR}/include/zoom_video_sdk)
 endif()
 
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/config.json")
+    execute_process(
+        COMMAND cp ${CMAKE_SOURCE_DIR}/config.json.example ${CMAKE_SOURCE_DIR}/config.json)
+endif()
+
 # Add the executable
 add_executable(video_sdk_send_raw_data
 ${CMAKE_SOURCE_DIR}/src/zoom_video_sdk_delegate.cpp
