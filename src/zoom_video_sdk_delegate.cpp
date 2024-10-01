@@ -19,9 +19,8 @@ void ZoomVideoSDKDelegate::onSessionJoin()
 /// \brief Triggered when session leaveSession
 void ZoomVideoSDKDelegate::onSessionLeave()
 {
-    g_main_loop_unref(_loop);
+    g_main_loop_quit(_loop);
     printf("Already left session.\n");
-    exit(1);
 };
 
 /// \brief Triggered when session error.

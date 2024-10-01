@@ -139,9 +139,6 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    printf("begin to join: %s\n", self_dir.c_str());
-    joinVideoSDKSession(session_name, session_psw, session_token);
-
     // Response user input Ctrl+C
     struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = stdin_signal_handler;
@@ -149,9 +146,14 @@ int main(int argc, char *argv[])
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
 
-    // Main loop
+    // Setup main loop
     loop = g_main_loop_new(NULL, FALSE);
     g_timeout_add(100, timeout_callback, loop);
+
+    printf("begin to join: %s\n", self_dir.c_str());
+    joinVideoSDKSession(session_name, session_psw, session_token);
+    
+    // start main loop
     g_main_loop_run(loop);
     return 0;
 }
