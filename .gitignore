@@ -5,3 +5,4 @@ build/
 *.mkv
 lib/
 config.json
+include/zoom_video_sdk/

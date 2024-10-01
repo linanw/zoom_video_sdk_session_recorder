@@ -17,11 +17,16 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Prepare the required libraries for linking
 # Extract the required libraries from archives to the lib directory
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk")
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1" OR NOT EXISTS "${CMAKE_SOURCE_DIR}/include/zoom_video_sdk")
+    execute_process(
+        COMMAND rm -rf ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk
+        COMMAND rm -rf ${CMAKE_SOURCE_DIR}/include/zoom_video_sdk)
     execute_process(
         COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk
         COMMAND tar -xf ${CMAKE_SOURCE_DIR}/lib.archive/zoom-video-sdk-linux_x86_64-1.13.3.tar.xz -C lib/zoom_video_sdk WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-    execute_process(COMMAND mv ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1)
+    execute_process(
+        COMMAND mv ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/libvideosdk.so.1
+        COMMAND mv ${CMAKE_SOURCE_DIR}/lib/zoom_video_sdk/h ${CMAKE_SOURCE_DIR}/include/zoom_video_sdk)
 endif()
 
 # Add the executable
