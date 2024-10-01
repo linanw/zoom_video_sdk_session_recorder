@@ -1,17 +1,6 @@
-#include <limits.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 #include <fstream>
-#include <iosfwd>
-#include <iostream>
-#include <signal.h>
-#include <stdlib.h>
 #include "json.hpp"
-#include "helpers/zoom_video_sdk_user_helper_interface.h"
-#include "zoom_video_sdk_interface.h"
 #include "zoom_video_sdk_api.h"
-#include "zoom_video_sdk_def.h"
 #include "zoom_video_sdk_delegate.h"
 #include "opencv_video_source.h"
 

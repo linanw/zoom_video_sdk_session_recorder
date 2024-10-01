@@ -1,15 +1,10 @@
 #include "opencv_video_source.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 #include <thread>
 
 using namespace cv;
 using namespace std;
-
 using namespace ZOOMVIDEOSDK;
 
 int video_play_flag = -1;

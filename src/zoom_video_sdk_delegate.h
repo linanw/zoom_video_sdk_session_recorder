@@ -1,7 +1,8 @@
 #include <zoom_video_sdk_interface.h>
 #include <zoom_video_sdk_delegate_interface.h>
 #include <glib.h>
-USING_ZOOM_VIDEO_SDK_NAMESPACE
+
+using namespace ZOOMVIDEOSDK;
 
 class ZoomVideoSDKDelegate : public IZoomVideoSDKDelegate
 {

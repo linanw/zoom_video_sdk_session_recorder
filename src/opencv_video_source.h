@@ -1,5 +1,3 @@
-
-// Zoom Video SDK
 #include "helpers/zoom_video_sdk_video_source_helper_interface.h"
 
 using namespace ZOOMVIDEOSDK;

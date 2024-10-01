@@ -1,7 +1,5 @@
 #include "zoom_video_sdk_delegate.h"
 
-#include <glib.h>
-
 ZoomVideoSDKDelegate::ZoomVideoSDKDelegate(GMainLoop *loop, IZoomVideoSDK *video_sdk_obj)
 {
     _loop = loop;
