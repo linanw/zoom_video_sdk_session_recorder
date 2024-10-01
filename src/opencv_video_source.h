@@ -9,6 +9,7 @@ class OpenCVVideoSource : public IZoomVideoSDKVideoSource
 	IZoomVideoSDKVideoSender* sender_;
 	int width_;
 	int height_;
+	int fps_;
 
 public:
 	virtual	void onInitialize(IZoomVideoSDKVideoSender* sender, IVideoSDKVector<VideoSourceCapability >* support_cap_list, VideoSourceCapability& suggest_cap);
