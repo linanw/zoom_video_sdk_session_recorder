@@ -42,7 +42,7 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
         return;
     }
     IZoomVideoSDKDelegate *listener = new ZoomVideoSDKDelegate(loop, video_sdk_obj);
-    OpenCVVideoSource *hikvisonVideoSource = new OpenCVVideoSource();
+    OpenCVVideoSource *openCVVideoSource = new OpenCVVideoSource();
     video_sdk_obj->addListener(dynamic_cast<IZoomVideoSDKDelegate *>(listener));
     ZoomVideoSDKSessionContext session_context;
     session_context.sessionName = session_name.c_str();
@@ -53,7 +53,7 @@ void joinVideoSDKSession(std::string &session_name, std::string &session_psw, st
     session_context.audioOption.connect = true;
     session_context.audioOption.mute = true;
     session_context.sessionIdleTimeoutMins = 0;
-    session_context.externalVideoSource = hikvisonVideoSource;
+    session_context.externalVideoSource = openCVVideoSource;
     IZoomVideoSDKSession *session = NULL;
     if (video_sdk_obj)
         session = video_sdk_obj->joinSession(session_context);
