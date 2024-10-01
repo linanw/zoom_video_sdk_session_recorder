@@ -2,7 +2,7 @@
 sudo apt update
 
 # Install cMake
-sudo apt install -y build-essential gcc cmake
+sudo apt install -y build-essential gcc gdb cmake
 
 # ZoomVideoSDK dependencies
 sudo apt install -y libglib2.0-dev libxcb-image0 libxcb-keysyms1 libxcb-xtest0 libxcb-shape0 libgbm1
