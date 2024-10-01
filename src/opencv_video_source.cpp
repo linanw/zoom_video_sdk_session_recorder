@@ -93,6 +93,7 @@ void OpenCVVideoSource::onStartSend()
 	// ******************* Use OpenCV to send video *******************************
 	video_play_flag = 1;
 	sendVideoToVideoSource(sender_, "Big_Buck_Bunny_1080_10s_1MB.mp4", width_, height_, fps_);
+	// sendVideoToVideoSource(sender_, "rtsp://zoom:stream-rtsp@192.168.72.145", width_, height_, fps_);
 	// ***************************************************************************
 }
 
