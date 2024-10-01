@@ -62,7 +62,7 @@ void sendVideoToVideoSource(IZoomVideoSDKVideoSender *video_sender, string video
 					}
 				}
 				video_sender->sendVideoFrame(frameBuffer, width, height, frameLen, 0);
-				std::this_thread::sleep_for(std::chrono::milliseconds(22/video_file_fps));
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000/video_file_fps));
 			}
 			cap.release();
 		}
